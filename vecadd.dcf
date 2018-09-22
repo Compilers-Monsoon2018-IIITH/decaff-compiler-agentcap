@@ -1,0 +1,30 @@
+class Program {
+	int vec1[1000006], vec2[1000006], vec3[1000006];
+
+	int main() {
+		int k,i;
+
+		// Scanning the dimensionality of the vector
+		callout ("scanf", k);
+
+		// Scanning vector 1
+		for i = 0 , n {
+			callout ("scanf", vec1[i]);
+		}
+
+		// Scanning vector 2
+		for i = 0 , n {
+			callout ("scanf", vec2[i]);
+		}
+
+		// Adding the 2 vectors and printing the resulting vector
+		for i = 0 , n {
+			vec3[i] = vec1[i] + vec2[i];
+			callout ("printf", vec3[i]);
+			callout ("printf", " ");
+		}
+		callout ("printf", "\n");
+
+		return 0;
+	}
+}

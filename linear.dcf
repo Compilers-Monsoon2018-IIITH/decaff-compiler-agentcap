@@ -1,0 +1,32 @@
+class Program {
+	int arr[1000006];
+
+	int main() {
+		int n,i,x,idx;
+
+		// Scanning the size of the array
+		callout ("scanf", n);
+
+		// Scanning the array
+		for i = 0 , n {
+			callout ("scanf", arr[i]);
+		}
+
+		// Scanning the element x to search for in the array
+		callout ("scanf", x);
+
+		// performing linear search
+		idx = -1;
+		for i = 0 , n {
+			if (arr[i] == x) {
+				idx = i;
+				break;
+			}
+		}
+		callout ("printf", "Idx is ");
+		callout ("printf", idx);
+		callout ("printf", "\n");
+
+		return 0;
+	}
+}

@@ -1,0 +1,22 @@
+class Program {
+
+	int fib(int n) {
+		if (n <= 1) {
+			return n;
+		}
+		return fib(n-1) + fib(n-2);
+	}
+
+	int main() {
+		int n,ans;
+
+		callout ("scanf", n);
+
+		ans = fib(n);
+
+		callout ("printf", ans);
+		callout ("printf", "\n");
+
+		return 0;
+	}
+}
