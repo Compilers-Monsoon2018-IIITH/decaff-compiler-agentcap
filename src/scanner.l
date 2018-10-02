@@ -13,10 +13,27 @@ char \\n|\\t|\\'|\\\\|\\\"|[^\\"']
 str {char}*
 
 %%
-{dec}				{return DECIMAL;}
-true|false			{return BOOL;}
-{hex}				{return HEX;}
+"class Program"		{return CLSPRG;}
+"true"|"false"		{return BOOL;}
+"void"				{return VOID;}
+"int"|"boolean"		{return TYPE;}
+"if"				{return IF;}
+"else"				{return ELSE;}
+"for"				{return FOR;}
+"return"			{return RETURN;}
+"break"				{return BREAK;}
+"continue"			{return CONTINUE;}
+"callout"			{return CALLOUT;}
+"//".*					{ }
 {id}				{return ID;}
+{dec}				{return DECIMAL;}
+{hex}				{return HEX;}
+"="					{return '=';}
+"+="|"-="			{return PMEQUAL;}
+","					{return ',';}
+";"					{return SCOLON;}
+"{"					{return '{';}
+"}"					{return '}';}
 "["					{return '[';}
 "]"					{return ']';}
 "+"					{return '+';}
