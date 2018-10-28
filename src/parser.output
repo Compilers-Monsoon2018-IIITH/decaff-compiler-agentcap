@@ -1,0 +1,2032 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: CLSPRG '{' body '}'
+
+    2 body: field_decl_star method_decl_star
+
+    3 field_decl_star: %empty
+    4                | field_decl_star field_decl
+
+    5 field_decl: TYPE variables SCOLON
+
+    6 variables: variable
+    7          | variables ',' variable
+
+    8 variable: ID
+    9         | ID '[' int_literal ']'
+
+   10 method_decl_star: %empty
+   11                 | method_decl method_decl_star
+
+   12 method_decl: VOID ID '(' parameters_list ')' block
+   13            | TYPE ID '(' parameters_list ')' block
+
+   14 block: '{' var_decl_star statement_star '}'
+
+   15 var_decl_star: %empty
+   16              | var_decl_star TYPE ID_plus SCOLON
+
+   17 ID_plus: ID
+   18        | ID_plus ',' ID
+
+   19 statement_star: %empty
+   20               | statement_star statement
+
+   21 statement: location assign_op expr SCOLON
+   22          | method_call SCOLON
+   23          | IF '(' expr ')' block
+   24          | IF '(' expr ')' block ELSE block
+   25          | FOR ID '=' expr ',' expr block
+   26          | RETURN SCOLON
+   27          | RETURN expr SCOLON
+   28          | BREAK SCOLON
+   29          | CONTINUE SCOLON
+   30          | block
+
+   31 assign_op: '='
+   32          | PMEQUAL
+
+   33 method_call: method_name '(' ')'
+   34            | method_name '(' expr_list ')'
+   35            | CALLOUT '(' STRING ')'
+   36            | CALLOUT '(' STRING ',' callout_arg_plus ')'
+
+   37 callout_arg_plus: callout_arg
+   38                 | callout_arg_plus ',' callout_arg
+
+   39 method_name: ID
+
+   40 expr_list: expr
+   41          | expr_list ',' expr
+
+   42 location: ID
+   43         | ID '[' expr ']'
+
+   44 parameters_list: %empty
+   45                | parameters
+
+   46 parameters: TYPE ID
+   47           | parameters ',' TYPE ID
+
+   48 expr: location
+   49     | method_call
+   50     | literal
+   51     | expr '+' expr
+   52     | expr '-' expr
+   53     | expr '*' expr
+   54     | expr '/' expr
+   55     | expr '%' expr
+   56     | expr RELOP expr
+   57     | expr EQEQ expr
+   58     | expr NE expr
+   59     | expr AND expr
+   60     | expr OR expr
+   61     | '-' expr
+   62     | '!' expr
+   63     | '(' expr ')'
+
+   64 callout_arg: expr
+   65            | STRING
+
+   66 literal: int_literal
+   67        | CHAR
+   68        | BOOL
+
+   69 int_literal: DECIMAL
+   70            | HEX
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 62
+'%' (37) 55
+'(' (40) 12 13 23 24 33 34 35 36 63
+')' (41) 12 13 23 24 33 34 35 36 63
+'*' (42) 53
+'+' (43) 51
+',' (44) 7 18 25 36 38 41 47
+'-' (45) 52 61
+'/' (47) 54
+'=' (61) 25 31
+'[' (91) 9 43
+']' (93) 9 43
+'{' (123) 1 14
+'}' (125) 1 14
+error (256)
+DECIMAL (258) 69
+BOOL (259) 68
+HEX (260) 70
+ID (261) 8 9 12 13 17 18 25 39 42 43 46 47
+RELOP (262) 56
+EQEQ (263) 57
+NE (264) 58
+AND (265) 59
+OR (266) 60
+CHAR (267) 67
+STRING (268) 35 36 65
+CLSPRG (269) 1
+VOID (270) 12
+TYPE (271) 5 13 16 46 47
+IF (272) 23 24
+ELSE (273) 24
+FOR (274) 25
+RETURN (275) 26 27
+BREAK (276) 28
+CONTINUE (277) 29
+CALLOUT (278) 35 36
+SCOLON (279) 5 16 21 22 26 27 28 29
+PMEQUAL (280) 32
+
+
+Nonterminals, with rules where they appear
+
+$accept (40)
+    on left: 0
+program (41)
+    on left: 1, on right: 0
+body (42)
+    on left: 2, on right: 1
+field_decl_star (43)
+    on left: 3 4, on right: 2 4
+field_decl (44)
+    on left: 5, on right: 4
+variables (45)
+    on left: 6 7, on right: 5 7
+variable (46)
+    on left: 8 9, on right: 6 7
+method_decl_star (47)
+    on left: 10 11, on right: 2 11
+method_decl (48)
+    on left: 12 13, on right: 11
+block (49)
+    on left: 14, on right: 12 13 23 24 25 30
+var_decl_star (50)
+    on left: 15 16, on right: 14 16
+ID_plus (51)
+    on left: 17 18, on right: 16 18
+statement_star (52)
+    on left: 19 20, on right: 14 20
+statement (53)
+    on left: 21 22 23 24 25 26 27 28 29 30, on right: 20
+assign_op (54)
+    on left: 31 32, on right: 21
+method_call (55)
+    on left: 33 34 35 36, on right: 22 49
+callout_arg_plus (56)
+    on left: 37 38, on right: 36 38
+method_name (57)
+    on left: 39, on right: 33 34
+expr_list (58)
+    on left: 40 41, on right: 34 41
+location (59)
+    on left: 42 43, on right: 21 48
+parameters_list (60)
+    on left: 44 45, on right: 12 13
+parameters (61)
+    on left: 46 47, on right: 45 47
+expr (62)
+    on left: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63, on right:
+    21 23 24 25 27 40 41 43 51 52 53 54 55 56 57 58 59 60 61 62 63
+    64
+callout_arg (63)
+    on left: 64 65, on right: 37 38
+literal (64)
+    on left: 66 67 68, on right: 50
+int_literal (65)
+    on left: 69 70, on right: 9 66
+
+
+State 0
+
+    0 $accept: . program $end
+
+    CLSPRG  shift, and go to state 1
+
+    program  go to state 2
+
+
+State 1
+
+    1 program: CLSPRG . '{' body '}'
+
+    '{'  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 program: CLSPRG '{' . body '}'
+
+    $default  reduce using rule 3 (field_decl_star)
+
+    body             go to state 5
+    field_decl_star  go to state 6
+
+
+State 4
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 5
+
+    1 program: CLSPRG '{' body . '}'
+
+    '}'  shift, and go to state 7
+
+
+State 6
+
+    2 body: field_decl_star . method_decl_star
+    4 field_decl_star: field_decl_star . field_decl
+
+    VOID  shift, and go to state 8
+    TYPE  shift, and go to state 9
+
+    $default  reduce using rule 10 (method_decl_star)
+
+    field_decl        go to state 10
+    method_decl_star  go to state 11
+    method_decl       go to state 12
+
+
+State 7
+
+    1 program: CLSPRG '{' body '}' .
+
+    $default  reduce using rule 1 (program)
+
+
+State 8
+
+   12 method_decl: VOID . ID '(' parameters_list ')' block
+
+    ID  shift, and go to state 13
+
+
+State 9
+
+    5 field_decl: TYPE . variables SCOLON
+   13 method_decl: TYPE . ID '(' parameters_list ')' block
+
+    ID  shift, and go to state 14
+
+    variables  go to state 15
+    variable   go to state 16
+
+
+State 10
+
+    4 field_decl_star: field_decl_star field_decl .
+
+    $default  reduce using rule 4 (field_decl_star)
+
+
+State 11
+
+    2 body: field_decl_star method_decl_star .
+
+    $default  reduce using rule 2 (body)
+
+
+State 12
+
+   11 method_decl_star: method_decl . method_decl_star
+
+    VOID  shift, and go to state 8
+    TYPE  shift, and go to state 17
+
+    $default  reduce using rule 10 (method_decl_star)
+
+    method_decl_star  go to state 18
+    method_decl       go to state 12
+
+
+State 13
+
+   12 method_decl: VOID ID . '(' parameters_list ')' block
+
+    '('  shift, and go to state 19
+
+
+State 14
+
+    8 variable: ID .
+    9         | ID . '[' int_literal ']'
+   13 method_decl: TYPE ID . '(' parameters_list ')' block
+
+    '['  shift, and go to state 20
+    '('  shift, and go to state 21
+
+    $default  reduce using rule 8 (variable)
+
+
+State 15
+
+    5 field_decl: TYPE variables . SCOLON
+    7 variables: variables . ',' variable
+
+    SCOLON  shift, and go to state 22
+    ','     shift, and go to state 23
+
+
+State 16
+
+    6 variables: variable .
+
+    $default  reduce using rule 6 (variables)
+
+
+State 17
+
+   13 method_decl: TYPE . ID '(' parameters_list ')' block
+
+    ID  shift, and go to state 24
+
+
+State 18
+
+   11 method_decl_star: method_decl method_decl_star .
+
+    $default  reduce using rule 11 (method_decl_star)
+
+
+State 19
+
+   12 method_decl: VOID ID '(' . parameters_list ')' block
+
+    TYPE  shift, and go to state 25
+
+    $default  reduce using rule 44 (parameters_list)
+
+    parameters_list  go to state 26
+    parameters       go to state 27
+
+
+State 20
+
+    9 variable: ID '[' . int_literal ']'
+
+    DECIMAL  shift, and go to state 28
+    HEX      shift, and go to state 29
+
+    int_literal  go to state 30
+
+
+State 21
+
+   13 method_decl: TYPE ID '(' . parameters_list ')' block
+
+    TYPE  shift, and go to state 25
+
+    $default  reduce using rule 44 (parameters_list)
+
+    parameters_list  go to state 31
+    parameters       go to state 27
+
+
+State 22
+
+    5 field_decl: TYPE variables SCOLON .
+
+    $default  reduce using rule 5 (field_decl)
+
+
+State 23
+
+    7 variables: variables ',' . variable
+
+    ID  shift, and go to state 32
+
+    variable  go to state 33
+
+
+State 24
+
+   13 method_decl: TYPE ID . '(' parameters_list ')' block
+
+    '('  shift, and go to state 21
+
+
+State 25
+
+   46 parameters: TYPE . ID
+
+    ID  shift, and go to state 34
+
+
+State 26
+
+   12 method_decl: VOID ID '(' parameters_list . ')' block
+
+    ')'  shift, and go to state 35
+
+
+State 27
+
+   45 parameters_list: parameters .
+   47 parameters: parameters . ',' TYPE ID
+
+    ','  shift, and go to state 36
+
+    $default  reduce using rule 45 (parameters_list)
+
+
+State 28
+
+   69 int_literal: DECIMAL .
+
+    $default  reduce using rule 69 (int_literal)
+
+
+State 29
+
+   70 int_literal: HEX .
+
+    $default  reduce using rule 70 (int_literal)
+
+
+State 30
+
+    9 variable: ID '[' int_literal . ']'
+
+    ']'  shift, and go to state 37
+
+
+State 31
+
+   13 method_decl: TYPE ID '(' parameters_list . ')' block
+
+    ')'  shift, and go to state 38
+
+
+State 32
+
+    8 variable: ID .
+    9         | ID . '[' int_literal ']'
+
+    '['  shift, and go to state 20
+
+    $default  reduce using rule 8 (variable)
+
+
+State 33
+
+    7 variables: variables ',' variable .
+
+    $default  reduce using rule 7 (variables)
+
+
+State 34
+
+   46 parameters: TYPE ID .
+
+    $default  reduce using rule 46 (parameters)
+
+
+State 35
+
+   12 method_decl: VOID ID '(' parameters_list ')' . block
+
+    '{'  shift, and go to state 39
+
+    block  go to state 40
+
+
+State 36
+
+   47 parameters: parameters ',' . TYPE ID
+
+    TYPE  shift, and go to state 41
+
+
+State 37
+
+    9 variable: ID '[' int_literal ']' .
+
+    $default  reduce using rule 9 (variable)
+
+
+State 38
+
+   13 method_decl: TYPE ID '(' parameters_list ')' . block
+
+    '{'  shift, and go to state 39
+
+    block  go to state 42
+
+
+State 39
+
+   14 block: '{' . var_decl_star statement_star '}'
+
+    $default  reduce using rule 15 (var_decl_star)
+
+    var_decl_star  go to state 43
+
+
+State 40
+
+   12 method_decl: VOID ID '(' parameters_list ')' block .
+
+    $default  reduce using rule 12 (method_decl)
+
+
+State 41
+
+   47 parameters: parameters ',' TYPE . ID
+
+    ID  shift, and go to state 44
+
+
+State 42
+
+   13 method_decl: TYPE ID '(' parameters_list ')' block .
+
+    $default  reduce using rule 13 (method_decl)
+
+
+State 43
+
+   14 block: '{' var_decl_star . statement_star '}'
+   16 var_decl_star: var_decl_star . TYPE ID_plus SCOLON
+
+    TYPE  shift, and go to state 45
+
+    $default  reduce using rule 19 (statement_star)
+
+    statement_star  go to state 46
+
+
+State 44
+
+   47 parameters: parameters ',' TYPE ID .
+
+    $default  reduce using rule 47 (parameters)
+
+
+State 45
+
+   16 var_decl_star: var_decl_star TYPE . ID_plus SCOLON
+
+    ID  shift, and go to state 47
+
+    ID_plus  go to state 48
+
+
+State 46
+
+   14 block: '{' var_decl_star statement_star . '}'
+   20 statement_star: statement_star . statement
+
+    ID        shift, and go to state 49
+    IF        shift, and go to state 50
+    FOR       shift, and go to state 51
+    RETURN    shift, and go to state 52
+    BREAK     shift, and go to state 53
+    CONTINUE  shift, and go to state 54
+    CALLOUT   shift, and go to state 55
+    '{'       shift, and go to state 39
+    '}'       shift, and go to state 56
+
+    block        go to state 57
+    statement    go to state 58
+    method_call  go to state 59
+    method_name  go to state 60
+    location     go to state 61
+
+
+State 47
+
+   17 ID_plus: ID .
+
+    $default  reduce using rule 17 (ID_plus)
+
+
+State 48
+
+   16 var_decl_star: var_decl_star TYPE ID_plus . SCOLON
+   18 ID_plus: ID_plus . ',' ID
+
+    SCOLON  shift, and go to state 62
+    ','     shift, and go to state 63
+
+
+State 49
+
+   39 method_name: ID .
+   42 location: ID .
+   43         | ID . '[' expr ']'
+
+    '['  shift, and go to state 64
+
+    '('       reduce using rule 39 (method_name)
+    $default  reduce using rule 42 (location)
+
+
+State 50
+
+   23 statement: IF . '(' expr ')' block
+   24          | IF . '(' expr ')' block ELSE block
+
+    '('  shift, and go to state 65
+
+
+State 51
+
+   25 statement: FOR . ID '=' expr ',' expr block
+
+    ID  shift, and go to state 66
+
+
+State 52
+
+   26 statement: RETURN . SCOLON
+   27          | RETURN . expr SCOLON
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    SCOLON   shift, and go to state 69
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 75
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 53
+
+   28 statement: BREAK . SCOLON
+
+    SCOLON  shift, and go to state 78
+
+
+State 54
+
+   29 statement: CONTINUE . SCOLON
+
+    SCOLON  shift, and go to state 79
+
+
+State 55
+
+   35 method_call: CALLOUT . '(' STRING ')'
+   36            | CALLOUT . '(' STRING ',' callout_arg_plus ')'
+
+    '('  shift, and go to state 80
+
+
+State 56
+
+   14 block: '{' var_decl_star statement_star '}' .
+
+    $default  reduce using rule 14 (block)
+
+
+State 57
+
+   30 statement: block .
+
+    $default  reduce using rule 30 (statement)
+
+
+State 58
+
+   20 statement_star: statement_star statement .
+
+    $default  reduce using rule 20 (statement_star)
+
+
+State 59
+
+   22 statement: method_call . SCOLON
+
+    SCOLON  shift, and go to state 81
+
+
+State 60
+
+   33 method_call: method_name . '(' ')'
+   34            | method_name . '(' expr_list ')'
+
+    '('  shift, and go to state 82
+
+
+State 61
+
+   21 statement: location . assign_op expr SCOLON
+
+    PMEQUAL  shift, and go to state 83
+    '='      shift, and go to state 84
+
+    assign_op  go to state 85
+
+
+State 62
+
+   16 var_decl_star: var_decl_star TYPE ID_plus SCOLON .
+
+    $default  reduce using rule 16 (var_decl_star)
+
+
+State 63
+
+   18 ID_plus: ID_plus ',' . ID
+
+    ID  shift, and go to state 86
+
+
+State 64
+
+   43 location: ID '[' . expr ']'
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 87
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 65
+
+   23 statement: IF '(' . expr ')' block
+   24          | IF '(' . expr ')' block ELSE block
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 88
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 66
+
+   25 statement: FOR ID . '=' expr ',' expr block
+
+    '='  shift, and go to state 89
+
+
+State 67
+
+   68 literal: BOOL .
+
+    $default  reduce using rule 68 (literal)
+
+
+State 68
+
+   67 literal: CHAR .
+
+    $default  reduce using rule 67 (literal)
+
+
+State 69
+
+   26 statement: RETURN SCOLON .
+
+    $default  reduce using rule 26 (statement)
+
+
+State 70
+
+   61 expr: '-' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 90
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 71
+
+   62 expr: '!' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 91
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 72
+
+   63 expr: '(' . expr ')'
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 92
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 73
+
+   49 expr: method_call .
+
+    $default  reduce using rule 49 (expr)
+
+
+State 74
+
+   48 expr: location .
+
+    $default  reduce using rule 48 (expr)
+
+
+State 75
+
+   27 statement: RETURN expr . SCOLON
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP   shift, and go to state 93
+    EQEQ    shift, and go to state 94
+    NE      shift, and go to state 95
+    AND     shift, and go to state 96
+    OR      shift, and go to state 97
+    SCOLON  shift, and go to state 98
+    '+'     shift, and go to state 99
+    '-'     shift, and go to state 100
+    '*'     shift, and go to state 101
+    '/'     shift, and go to state 102
+    '%'     shift, and go to state 103
+
+
+State 76
+
+   50 expr: literal .
+
+    $default  reduce using rule 50 (expr)
+
+
+State 77
+
+   66 literal: int_literal .
+
+    $default  reduce using rule 66 (literal)
+
+
+State 78
+
+   28 statement: BREAK SCOLON .
+
+    $default  reduce using rule 28 (statement)
+
+
+State 79
+
+   29 statement: CONTINUE SCOLON .
+
+    $default  reduce using rule 29 (statement)
+
+
+State 80
+
+   35 method_call: CALLOUT '(' . STRING ')'
+   36            | CALLOUT '(' . STRING ',' callout_arg_plus ')'
+
+    STRING  shift, and go to state 104
+
+
+State 81
+
+   22 statement: method_call SCOLON .
+
+    $default  reduce using rule 22 (statement)
+
+
+State 82
+
+   33 method_call: method_name '(' . ')'
+   34            | method_name '(' . expr_list ')'
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+    ')'      shift, and go to state 105
+
+    method_call  go to state 73
+    method_name  go to state 60
+    expr_list    go to state 106
+    location     go to state 74
+    expr         go to state 107
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 83
+
+   32 assign_op: PMEQUAL .
+
+    $default  reduce using rule 32 (assign_op)
+
+
+State 84
+
+   31 assign_op: '=' .
+
+    $default  reduce using rule 31 (assign_op)
+
+
+State 85
+
+   21 statement: location assign_op . expr SCOLON
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 108
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 86
+
+   18 ID_plus: ID_plus ',' ID .
+
+    $default  reduce using rule 18 (ID_plus)
+
+
+State 87
+
+   43 location: ID '[' expr . ']'
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+    ']'    shift, and go to state 109
+
+
+State 88
+
+   23 statement: IF '(' expr . ')' block
+   24          | IF '(' expr . ')' block ELSE block
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+    ')'    shift, and go to state 110
+
+
+State 89
+
+   25 statement: FOR ID '=' . expr ',' expr block
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 111
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 90
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+   61     | '-' expr .
+
+    '*'  shift, and go to state 101
+    '/'  shift, and go to state 102
+    '%'  shift, and go to state 103
+
+    $default  reduce using rule 61 (expr)
+
+
+State 91
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+   62     | '!' expr .
+
+    $default  reduce using rule 62 (expr)
+
+
+State 92
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+   63     | '(' expr . ')'
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+    ')'    shift, and go to state 112
+
+
+State 93
+
+   56 expr: expr RELOP . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 113
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 94
+
+   57 expr: expr EQEQ . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 114
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 95
+
+   58 expr: expr NE . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 115
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 96
+
+   59 expr: expr AND . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 116
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 97
+
+   60 expr: expr OR . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 117
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 98
+
+   27 statement: RETURN expr SCOLON .
+
+    $default  reduce using rule 27 (statement)
+
+
+State 99
+
+   51 expr: expr '+' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 118
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 100
+
+   52 expr: expr '-' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 119
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 101
+
+   53 expr: expr '*' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 120
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 102
+
+   54 expr: expr '/' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 121
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 103
+
+   55 expr: expr '%' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 122
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 104
+
+   35 method_call: CALLOUT '(' STRING . ')'
+   36            | CALLOUT '(' STRING . ',' callout_arg_plus ')'
+
+    ','  shift, and go to state 123
+    ')'  shift, and go to state 124
+
+
+State 105
+
+   33 method_call: method_name '(' ')' .
+
+    $default  reduce using rule 33 (method_call)
+
+
+State 106
+
+   34 method_call: method_name '(' expr_list . ')'
+   41 expr_list: expr_list . ',' expr
+
+    ','  shift, and go to state 125
+    ')'  shift, and go to state 126
+
+
+State 107
+
+   40 expr_list: expr .
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 40 (expr_list)
+
+
+State 108
+
+   21 statement: location assign_op expr . SCOLON
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP   shift, and go to state 93
+    EQEQ    shift, and go to state 94
+    NE      shift, and go to state 95
+    AND     shift, and go to state 96
+    OR      shift, and go to state 97
+    SCOLON  shift, and go to state 127
+    '+'     shift, and go to state 99
+    '-'     shift, and go to state 100
+    '*'     shift, and go to state 101
+    '/'     shift, and go to state 102
+    '%'     shift, and go to state 103
+
+
+State 109
+
+   43 location: ID '[' expr ']' .
+
+    $default  reduce using rule 43 (location)
+
+
+State 110
+
+   23 statement: IF '(' expr ')' . block
+   24          | IF '(' expr ')' . block ELSE block
+
+    '{'  shift, and go to state 39
+
+    block  go to state 128
+
+
+State 111
+
+   25 statement: FOR ID '=' expr . ',' expr block
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+    ','    shift, and go to state 129
+
+
+State 112
+
+   63 expr: '(' expr ')' .
+
+    $default  reduce using rule 63 (expr)
+
+
+State 113
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   56     | expr RELOP expr .
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    '+'  shift, and go to state 99
+    '-'  shift, and go to state 100
+    '*'  shift, and go to state 101
+    '/'  shift, and go to state 102
+    '%'  shift, and go to state 103
+
+    $default  reduce using rule 56 (expr)
+
+
+State 114
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   57     | expr EQEQ expr .
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 57 (expr)
+
+
+State 115
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   58     | expr NE expr .
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 58 (expr)
+
+
+State 116
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   59     | expr AND expr .
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 59 (expr)
+
+
+State 117
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+   60     | expr OR expr .
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 60 (expr)
+
+
+State 118
+
+   51 expr: expr . '+' expr
+   51     | expr '+' expr .
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    '*'  shift, and go to state 101
+    '/'  shift, and go to state 102
+    '%'  shift, and go to state 103
+
+    $default  reduce using rule 51 (expr)
+
+
+State 119
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   52     | expr '-' expr .
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    '*'  shift, and go to state 101
+    '/'  shift, and go to state 102
+    '%'  shift, and go to state 103
+
+    $default  reduce using rule 52 (expr)
+
+
+State 120
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   53     | expr '*' expr .
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    $default  reduce using rule 53 (expr)
+
+
+State 121
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   54     | expr '/' expr .
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    $default  reduce using rule 54 (expr)
+
+
+State 122
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   55     | expr '%' expr .
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    $default  reduce using rule 55 (expr)
+
+
+State 123
+
+   36 method_call: CALLOUT '(' STRING ',' . callout_arg_plus ')'
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    STRING   shift, and go to state 130
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call       go to state 73
+    callout_arg_plus  go to state 131
+    method_name       go to state 60
+    location          go to state 74
+    expr              go to state 132
+    callout_arg       go to state 133
+    literal           go to state 76
+    int_literal       go to state 77
+
+
+State 124
+
+   35 method_call: CALLOUT '(' STRING ')' .
+
+    $default  reduce using rule 35 (method_call)
+
+
+State 125
+
+   41 expr_list: expr_list ',' . expr
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 134
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 126
+
+   34 method_call: method_name '(' expr_list ')' .
+
+    $default  reduce using rule 34 (method_call)
+
+
+State 127
+
+   21 statement: location assign_op expr SCOLON .
+
+    $default  reduce using rule 21 (statement)
+
+
+State 128
+
+   23 statement: IF '(' expr ')' block .
+   24          | IF '(' expr ')' block . ELSE block
+
+    ELSE  shift, and go to state 135
+
+    $default  reduce using rule 23 (statement)
+
+
+State 129
+
+   25 statement: FOR ID '=' expr ',' . expr block
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 136
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 130
+
+   65 callout_arg: STRING .
+
+    $default  reduce using rule 65 (callout_arg)
+
+
+State 131
+
+   36 method_call: CALLOUT '(' STRING ',' callout_arg_plus . ')'
+   38 callout_arg_plus: callout_arg_plus . ',' callout_arg
+
+    ','  shift, and go to state 137
+    ')'  shift, and go to state 138
+
+
+State 132
+
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+   64 callout_arg: expr .
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 64 (callout_arg)
+
+
+State 133
+
+   37 callout_arg_plus: callout_arg .
+
+    $default  reduce using rule 37 (callout_arg_plus)
+
+
+State 134
+
+   41 expr_list: expr_list ',' expr .
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+
+    $default  reduce using rule 41 (expr_list)
+
+
+State 135
+
+   24 statement: IF '(' expr ')' block ELSE . block
+
+    '{'  shift, and go to state 39
+
+    block  go to state 139
+
+
+State 136
+
+   25 statement: FOR ID '=' expr ',' expr . block
+   51 expr: expr . '+' expr
+   52     | expr . '-' expr
+   53     | expr . '*' expr
+   54     | expr . '/' expr
+   55     | expr . '%' expr
+   56     | expr . RELOP expr
+   57     | expr . EQEQ expr
+   58     | expr . NE expr
+   59     | expr . AND expr
+   60     | expr . OR expr
+
+    RELOP  shift, and go to state 93
+    EQEQ   shift, and go to state 94
+    NE     shift, and go to state 95
+    AND    shift, and go to state 96
+    OR     shift, and go to state 97
+    '+'    shift, and go to state 99
+    '-'    shift, and go to state 100
+    '*'    shift, and go to state 101
+    '/'    shift, and go to state 102
+    '%'    shift, and go to state 103
+    '{'    shift, and go to state 39
+
+    block  go to state 140
+
+
+State 137
+
+   38 callout_arg_plus: callout_arg_plus ',' . callout_arg
+
+    DECIMAL  shift, and go to state 28
+    BOOL     shift, and go to state 67
+    HEX      shift, and go to state 29
+    ID       shift, and go to state 49
+    CHAR     shift, and go to state 68
+    STRING   shift, and go to state 130
+    CALLOUT  shift, and go to state 55
+    '-'      shift, and go to state 70
+    '!'      shift, and go to state 71
+    '('      shift, and go to state 72
+
+    method_call  go to state 73
+    method_name  go to state 60
+    location     go to state 74
+    expr         go to state 132
+    callout_arg  go to state 141
+    literal      go to state 76
+    int_literal  go to state 77
+
+
+State 138
+
+   36 method_call: CALLOUT '(' STRING ',' callout_arg_plus ')' .
+
+    $default  reduce using rule 36 (method_call)
+
+
+State 139
+
+   24 statement: IF '(' expr ')' block ELSE block .
+
+    $default  reduce using rule 24 (statement)
+
+
+State 140
+
+   25 statement: FOR ID '=' expr ',' expr block .
+
+    $default  reduce using rule 25 (statement)
+
+
+State 141
+
+   38 callout_arg_plus: callout_arg_plus ',' callout_arg .
+
+    $default  reduce using rule 38 (callout_arg_plus)

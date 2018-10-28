@@ -24,7 +24,6 @@ str {char}*
 "break"				{return BREAK;}
 "continue"			{return CONTINUE;}
 "callout"			{return CALLOUT;}
-"//".*					{ }
 {id}				{return ID;}
 {dec}				{return DECIMAL;}
 {hex}				{return HEX;}
@@ -52,6 +51,7 @@ str {char}*
 [ \t]				{ }
 \'{char}\'			{return CHAR;}
 \"{str}\" 			{return STRING;}
+"//".*					{ }
 \n		     		{++lineno;}
 .					{ printf("Line No %d: Unrecognized Character\n", lineno); }
 

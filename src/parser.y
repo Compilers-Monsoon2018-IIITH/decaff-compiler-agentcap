@@ -6,44 +6,56 @@
 
 %start program
 
-%left OR
-%left AND
+%left OR AND
 %left EQEQ NE
 %left RELOP
 %left '+' '-'
 %left '*' '/' '%' 
+%left '!'
 
 
 %%
-program : CLSPRG '{' body '}';
+program :
+	CLSPRG '{' body '}'
+	;
 
-body : | field_decl_star method_decl_star | method_decl_star ;
+body :
+	field_decl_star method_decl_star
+	;
 
-field_decl_star : field_decl | field_decl_star field_decl;
+field_decl_star :
+	| field_decl_star field_decl
+	;
 
-field_decl : TYPE variables SCOLON;
+field_decl :
+	TYPE variables SCOLON
+	;
 
-variables : variable
+variables : 
+	variable
 	| variables ',' variable
 	;
 
-variable : ID
+variable :
+	ID
 	| ID '[' int_literal ']'
 	;
 
 method_decl_star :
-	| method_decl | method_decl_star method_decl
+	| method_decl method_decl_star
 	;
 
-method_decl : VOID ID '(' parameters_list ')' block
+method_decl : 
+	VOID ID '(' parameters_list ')' block
 	| TYPE ID '(' parameters_list ')' block
 	;
 
-block : '{' var_decl_star statement_star '}'
+block : 
+	'{' var_decl_star statement_star '}'
 	;
 
 var_decl_star :
-	| TYPE ID_plus SCOLON | var_decl_star TYPE ID_plus SCOLON
+	| var_decl_star TYPE ID_plus SCOLON
 	;
 
 ID_plus : ID
@@ -51,10 +63,11 @@ ID_plus : ID
 	;
 
 statement_star :
-	| statement | statement_star statement
+	| statement_star statement
 	;
 
-statement : location assign_op expr SCOLON
+statement : 
+	location assign_op expr SCOLON
 	| method_call SCOLON
 	| IF '(' expr ')' block
 	| IF '(' expr ')' block ELSE block
@@ -66,24 +79,35 @@ statement : location assign_op expr SCOLON
 	| block
 	;
 
-assign_op : '=' | PMEQUAL;
 
-method_call : method_name '(' ')'
+assign_op :
+	'=' 
+	| PMEQUAL
+	;
+
+method_call :
+	method_name '(' ')'
 	| method_name '(' expr_list ')'
-	| CALLOUT '(' string_literal ')'
-	| CALLOUT '(' string_literal ',' callout_arg_plus ')'
+	| CALLOUT '(' STRING ')'
+	| CALLOUT '(' STRING ',' callout_arg_plus ')'
+	;
 
-callout_arg_plus : callout_arg
+callout_arg_plus : 
+	callout_arg
 	| callout_arg_plus ',' callout_arg
 	;
 
-method_name : ID;
+method_name : 
+	ID
+	;
 
-expr_list : expr
+expr_list : 
+	expr
 	| expr_list ',' expr
 	;
 
-location : ID
+location : 
+	ID
 	| ID '[' expr ']'
 	;
 
@@ -91,73 +115,56 @@ parameters_list:
 	| parameters 
 	;
 
-parameters : TYPE ID
+parameters : 
+	TYPE ID
 	| parameters ',' TYPE ID 
 	;
 
-expr : 	location
+expr : 
+	location
 	| method_call
 	| literal
-	| expr bin_op expr
+	|expr '+' expr
+	|expr '-' expr
+	|expr '*' expr
+	|expr '/' expr
+	|expr '%' expr
+	|expr RELOP expr
+	|expr EQEQ expr
+	|expr NE expr
+	|expr AND expr
+	|expr OR expr	
 	| '-' expr
 	| '!' expr
 	| '(' expr ')'
 	;
 
 
-callout_arg : expr
-	| string_literal
+callout_arg : 
+	expr
+	| STRING
 	;
 
-bin_op : arith_op
-	| rel_op
-	| eq_op
-	| cond_op
+literal : 
+	int_literal
+	| CHAR
+	| BOOL
 	;
 
-arith_op : '+'
-	| '-'
-	| '*'
-	| '/'
-	| '%'
+int_literal : 
+	DECIMAL
+	| HEX
 	;
-
-rel_op : RELOP;
-
-eq_op : EQEQ | NE
-	;
-
-cond_op : AND | OR
-	;
-
-literal : int_literal
-	| char_literal
-	| bool_literal
-	;
-
-int_literal : decimal_literal
-	| hex_literal
-	;
-
-decimal_literal : DECIMAL;
-
-hex_literal : HEX;
-
-bool_literal : BOOL;
-
-char_literal :  CHAR;
-
-string_literal : STRING;
 
 %%
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	yyparse();
 	printf("Parsing Over\n");
 }
 
-yyerror(char *s)
+int yyerror(char *s)
 {
 	fprintf(stderr, "error: %s\n", s);
 }
