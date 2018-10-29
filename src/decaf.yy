@@ -59,10 +59,22 @@
 	int integerVal;
 	std::string* stringVal;
     class ASTnode* astnode;
+    class ProgramASTnode* programnode;
+    class BodyASTnode* bodynode;
+    class fieldDeclsASTnode* fieldsnode;
+    class fieldDeclASTnode* fieldnode;
+    class variableASTnode* variablenode;
+    class variablesASTnode* variablesnode;
+    class methodDeclsASTnode* methodsnode;
 }
 
-%type <astnode>	line expr stmt
-
+%type <programnode> program
+%type <bodynode> body
+%type <fieldsnode> field_decl_star
+%type <fieldnode> field_decl
+%type <variablesnode> variables
+%type <variablenode> variable
+%type <methodsnode> method_decl_star
 
 //%destructor { delete $$; } expr
 
@@ -78,150 +90,49 @@
 
 %}
 
-
-%token DECIMAL BOOL HEX ID RELOP EQEQ NE AND OR CHAR STRING CLSPRG VOID TYPE IF ELSE FOR RETURN BREAK CONTINUE CALLOUT SCOLON PMEQUAL
+%token END 0
+%token EOL
+%token CLSPRG CALLOUT RETURN BREAK CONTINUE IF ELSE FOR EQEQ NE AND OR SCOLON
+%token <stringVal> BOOL VOID TYPE ID PMEQUAL RELOP CHAR STRING
+%token <integerVal> DECIMAL HEX 
 
 %left OR AND
 %left EQEQ NE
 %left RELOP
 %left '+' '-'
 %left '*' '/' '%' 
-%left '!'
-
+%nonassoc '!'
 
 %%
 program :
-	CLSPRG '{' body '}'
+	CLSPRG '{' body '}' {$$ = new ProgramASTnode($3); driver.ast.pRoot = $$;}
 	;
 
 body :
-	field_decl_star method_decl_star
+	field_decl_star method_decl_star {$$ = new BodyASTnode($1,$2);}
 	;
 
 field_decl_star :
-	| field_decl_star field_decl
+	{$$ = new fieldDeclsASTnode();}
+	| field_decl_star field_decl {$$->push_back($2);}
 	;
 
 field_decl :
-	TYPE variables SCOLON
+	TYPE variables SCOLON {$$ = new fieldDeclASTnode(*$1,$2);}
 	;
 
 variables : 
-	variable
-	| variables ',' variable
+	variable {$$ = new variablesASTnode(); $$->push_back($1);}
+	| variables ',' variable { $$->push_back($3); }
 	;
 
 variable :
-	ID
-	| ID '[' int_literal ']'
+	ID {$$ = new variableASTnode("Normal",*$1);}
+	| ID '[' DECIMAL ']' {$$ = new variableASTnode("Array",*$1,$3);}
 	;
 
-method_decl_star :
-	| method_decl method_decl_star
-	;
+method_decl_star : {}|ID {$$ = new methodDeclsASTnode(*$1);}
 
-method_decl : 
-	VOID ID '(' parameters_list ')' block
-	| TYPE ID '(' parameters_list ')' block
-	;
-
-block : 
-	'{' var_decl_star statement_star '}'
-	;
-
-var_decl_star :
-	| var_decl_star TYPE ID_plus SCOLON
-	;
-
-ID_plus : 
-	ID
-	| ID_plus ',' ID
-	;
-
-statement_star :
-	| statement_star statement
-	;
-
-statement : 
-	location '=' expr SCOLON
-	| location PMEQUAL expr SCOLON
-	| method_call SCOLON
-	| IF '(' expr ')' block
-	| IF '(' expr ')' block ELSE block
-	| FOR ID '=' expr ',' expr block
-	| RETURN SCOLON
-	| RETURN expr SCOLON
-	| BREAK SCOLON
-	| CONTINUE SCOLON
-	| block
-	;
-
-method_call :
-	ID '(' ')'
-	| ID '(' expr_list ')'
-	| CALLOUT '(' STRING ')'
-	| CALLOUT '(' STRING ',' callout_arg_plus ')'
-	;
-
-callout_arg_plus : 
-	callout_arg
-	| callout_arg_plus ',' callout_arg
-	;
-
-expr_list : 
-	expr
-	| expr_list ',' expr
-	;
-
-location : 
-	ID
-	| ID '[' expr ']'
-	;
-
-parameters_list:
-	| parameters 
-	;
-
-parameters : 
-	TYPE ID
-	| parameters ',' TYPE ID 
-	;
-
-expr : 
-	location
-	| method_call
-	| literal
-	|expr '+' expr
-	|expr '-' expr
-	|expr '*' expr
-	|expr '/' expr
-	|expr '%' expr
-	|expr RELOP expr
-	|expr EQEQ expr
-	|expr NE expr
-	|expr AND expr
-	|expr OR expr	
-	| '-' expr
-	| '!' expr
-	| '(' expr ')'
-	;
-
-
-callout_arg : 
-	expr
-	| STRING
-	;
-
-literal : 
-	int_literal
-	| CHAR
-	| BOOL
-	;
-
-int_literal : 
-	DECIMAL
-	| HEX
-	;
 %%
 
 

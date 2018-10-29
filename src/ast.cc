@@ -24,33 +24,30 @@ int main()
 	    if (result)
     	{
             if (ast.pRoot != NULL ) {
-                BinaryASTnode *bnode;
-                TernaryASTnode *tnode;
-                IntLitASTnode *inode;
-                AssignASTnode * anode;
+                ProgramASTnode * pnode;
 
                 cout << "Postfix Form: " << endl; 
 
-                bnode = dynamic_cast<BinaryASTnode *>(ast.pRoot);
-                if (bnode != NULL)
-                    pfv.visit(*bnode);
+                pnode = dynamic_cast<ProgramASTnode *>(ast.pRoot);
+                if (pnode != NULL)
+                    pfv.visit(*pnode);
 
-                tnode = dynamic_cast<TernaryASTnode *>(ast.pRoot);
-                if (tnode != NULL)
-                    pfv.visit(*tnode);
+                // tnode = dynamic_cast<TernaryASTnode *>(ast.pRoot);
+                // if (tnode != NULL)
+                //     pfv.visit(*tnode);
 
-                inode = dynamic_cast<IntLitASTnode *>(ast.pRoot);
-                if (inode != NULL)
-                    pfv.visit(*inode);
+                // inode = dynamic_cast<IntLitASTnode *>(ast.pRoot);
+                // if (inode != NULL)
+                //     pfv.visit(*inode);
 
-                anode = dynamic_cast<AssignASTnode *>(ast.pRoot);
-                if (anode != NULL)
-                    pfv.visit(*anode);
+                // anode = dynamic_cast<AssignASTnode *>(ast.pRoot);
+                // if (anode != NULL)
+                //     pfv.visit(*anode);
                 
                 
-                 cout <<  endl; 
+                //  cout <<  endl; 
             }
-            ast.clearAST();
+            // ast.clearAST();
 	    }
 	}
 }

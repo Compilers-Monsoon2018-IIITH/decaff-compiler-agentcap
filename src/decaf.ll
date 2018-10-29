@@ -65,7 +65,7 @@ str {char}*
     yylloc->step();
 %}
 
-"class Program"     {yylval->stringVal = new std::string(yytext,yyleng); return token::CLSPRG;}
+"class Program"     {return token::CLSPRG;}
 "true"|"false"      {yylval->stringVal = new std::string(yytext,yyleng); return token::BOOL;}
 "void"              {yylval->stringVal = new std::string(yytext,yyleng); return token::VOID;}
 "int"|"boolean"     {yylval->stringVal = new std::string(yytext,yyleng); return token::TYPE;}
@@ -78,7 +78,6 @@ str {char}*
 "callout"           {return token::CALLOUT;}
 {id}                {yylval->stringVal = new std::string(yytext,yyleng); return token::ID;}
 {dec}               {yylval->integerVal = atoi(yytext); return token::DECIMAL;}
-/* change atoi to atohex */
 {hex}               {yylval->integerVal = atoi(yytext); return token::HEX;}
 "="                 {return static_cast<token_type>(*yytext);}
 "+="|"-="           {yylval->stringVal = new std::string(yytext,yyleng); return token::PMEQUAL;}
