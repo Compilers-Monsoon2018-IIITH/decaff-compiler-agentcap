@@ -192,8 +192,15 @@ private:
 
 class methodDeclsASTnode : public ASTnode {
 public:
-    methodDeclsASTnode(string t) {
-        val = t;
+    methodDeclsASTnode() {
+    }
+
+    void push_back(ASTnode* methodDeclParam) {
+        methodDecls.push_back(methodDeclParam);
+    }
+
+    vector<ASTnode*> getMethodsDecls() {
+        return methodDecls;
     }
 
     virtual void accept(ASTvisitor& v) {
@@ -201,29 +208,479 @@ public:
     }
 
 private:
-    vector<ASTnode*> variables;
-    string val;
+    vector<ASTnode*> methodDecls;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class BinaryASTnode : public ASTnode {
+class methodDeclASTnode : public ASTnode {
 public:
-    BinaryASTnode (string binOperatorParm,
-                   ASTnode* pLeftParm,
-                   ASTnode* pRightParm)
+    methodDeclASTnode(string type, string name, ASTnode* paramList, ASTnode* block)
+    : type(type)
+    , name(name)
+    ,paramList(paramList)
+    , block(block) {
+    }
+
+    string getType() {
+        return type;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    ASTnode* getParamList() {
+        return paramList
+    }
+
+    ASTnode* getblock() {
+        return block;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    string type;
+    string name;
+    ASTnode* paramList;
+    ASTnode* block;
+};
+
+class blockASTnode : public ASTnode {
+public:
+    blockASTnode(ASTnode* varDecls, ASTnode* stmts)
+    : varDecls(varDecls)
+    , stmts(stmts) {
+    }
+
+    vector<ASTnode*> getMethodsDecls() {
+        return methodDecls;
+    }
+
+    ASTnode* getVarDecls() {
+        return varDecls;
+    }
+
+    ASTnode* getStmts() {
+        return stmts;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* varDecls;
+    ASTnode* stmts;
+};
+
+class varDeclsASTnode : public ASTnode {
+public:
+    varDeclsASTnode() {
+    }
+
+    void push_back(ASTnode* varDecl) {
+        varDecls.push_back(varDecl);
+    }
+
+    vector<ASTnode*> getVarDecls() {
+        return varDecls;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<ASTnode*> varDecls;
+};
+
+class varDeclASTnode : public ASTnode {
+public:
+    varDeclASTnode(string type, ASTnode* ids)
+    : type(type)
+    , ids(ids) {
+    }
+
+    string getType() {
+        return type;
+    }
+
+    ASTnode* getIds() {
+        return ids;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    string type;
+    ASTnode* ids;
+};
+
+class idsASTnode : public ASTnode {
+public:
+    idsASTnode() {
+    }
+
+    void push_back(string id) {
+        ids.push_back(id);
+    }
+
+    vector<string> getIds() {
+        return ids;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<string> ids;
+};
+
+class stmtsASTnode : public ASTnode {
+public:
+    stmtsASTnode() {
+    }
+
+    void push_back(ASTnode* stmt) {
+        stmts.push_back(stmt);
+    }
+
+    vector<ASTnode *> getStmts() {
+        return stmts;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<ASTnode*> stmts;
+};
+
+class stmtASTnode : public ASTnode {
+public:
+    stmtASTnode(ASTnode* stmt)
+    :stmt(stmt) {
+    }
+
+    ASTnode* getStmt() {
+        return stmt;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* stmt;
+};
+
+class assignASTnode : public ASTnode {
+public:
+    assignASTnode(ASTnode* location, string op, ASTnode* expr)
+    : location(location)
+    , op(op)
+    , expr(expr) {
+    }
+
+    ASTnode* getLocation() {
+        return location;
+    }
+
+    string getOp() {
+        return op;
+    }
+
+    ASTnode* getExpr() {
+        return expr;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* location;
+    string op;
+    ASTnode* expr;
+};
+
+class ifElseASTnode : public ASTnode {
+public:
+    assignASTnode(ASTnode* expr, ASTnode* ifblock, ASTnode* elseblock)
+    : expr(expr)
+    , ifblock(ifblock)
+    , elseblock(elseblock) {
+    }
+
+    ASTnode* getExpr() {
+        return expr;
+    }
+
+    ASTnode* getIfBlock() {
+        return ifblock;
+    }
+
+    ASTnode* getElseBlock() {
+        return elseblock;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* expr;
+    ASTnode* ifblock;
+    ASTnode* elseblock;
+};
+
+class forASTnode : public ASTnode {
+public:
+    forASTnode(string id, ASTnode* initCond, ASTnode* endCond, ASTnode* body)
+    : id(id)
+    , initCond(initC)
+    , endCond(endCond)
+    , body(body) {
+    }
+
+    string getId() {
+        return id;
+    }
+
+    ASTnode* getInitCond() {
+        return initCond;
+    }
+
+    ASTnode* getEndCond() {
+        return endCond;
+    }
+
+    ASTnode* getBody() {
+        return body;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    string id;
+    ASTnode* initCond;
+    ASTnode* endCond;
+    ASTnode* body;
+};
+
+class rtnStmtASTnode : public ASTnode {
+public:
+    rtnStmtASTnode(ASTnode* expr)
+    :expr(expr) {
+    }
+
+    ASTnode* getExpr() {
+        return expr;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* expr;
+};
+
+class breakStmtASTnode : public ASTnode {
+public:
+    breakStmtASTnode() {
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+private:
+};
+
+class continueStmtASTnode : public ASTnode {
+public:
+    continueStmtASTnode() {
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+private:
+};
+
+class methodCallASTnode : public ASTnode {
+public:
+    methodCallASTnode(string callType, string name, ASTnode* args)
+    : callType(callType)
+    , name(name)
+    , args(args) {
+    }
+
+    string getCallType() {
+        return callType;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    ASTnode* getArgs() {
+        return args;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+private:
+    string callType;
+    string name;
+    ASTnode* args;
+};
+
+class callOutArgsASTnode : public ASTnode {
+public:
+    callOutArgsASTnode() {
+    }
+
+    void push_back(ASTnode* argsParam) {
+        args.push_back(argsParam);
+    }
+    vector<ASTnode*> getArgs() {
+        return args;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<ASTnode*> args;
+};
+
+class exprListASTnode : public ASTnode {
+public:
+    exprListASTnode() {
+    }
+
+    void push_back(ASTnode* expr) {
+        exprs.push_back(exp);
+    }
+    vector<ASTnode*> getExprs() {
+        return exprs;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<ASTnode*> exprs;
+};
+
+class locationASTnode : public ASTnode {
+public:
+    locationASTnode(string type, string id)
+    : type(type)
+    , id(id) {
+    }
+
+    locationASTnode(string type, string id, ASTnode* expr)
+    : type(type)
+    , id(id)
+    , expr(expr) {
+    }
+
+    string getType() {
+        return type;
+    }
+
+    string getId() {
+        return id;
+    }
+
+    ASTnode* getExpr() {
+        return expr;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    string type;
+    string id;
+    ASTnode* expr;
+};
+
+class paramListASTnode : public ASTnode {
+public:
+    paramListASTnode(ASTnode* paramList)
+    :paramList(paramList) {
+    }
+
+    ASTnode* getParamList() {
+        return paramList;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* paramList;
+};
+
+class parametersASTnode : public ASTnode {
+public:
+    parametersASTnode() {
+    }
+
+    void push_back(ASTnode* parameter) {
+        parameters.push_back(parameter);
+    }
+    vector<ASTnode*> getParameters() {
+        return parameters;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<ASTnode*> parameters;
+};
+
+class exprASTnode : public ASTnode {
+public:
+    exprASTnode(ASTnode* expr)
+    :expr(expr) {
+    }
+
+    ASTnode* getExpr() {
+        return expr;
+    }    
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    ASTnode* expr;
+};
+
+class binaryASTnode : public ASTnode {
+public:
+    binaryASTnode (ASTnode* pLeftParm,
+                    string binOperatorParm,
+                    ASTnode* pRightParm)
     :pLeft(pLeftParm)
     ,pRight(pRightParm)
     ,mBinaryOperator(binOperatorParm) {
@@ -251,48 +708,74 @@ private:
     string   mBinaryOperator;
 };
 
-
-class TernaryASTnode : public ASTnode {
+class unaryASTnode : public ASTnode {
 public:
-    TernaryASTnode (ASTnode* pFirstParm,
-                    ASTnode* pSecondParm,
-                    ASTnode* pThirdParm)
-    :pFirst(pFirstParm)
-    ,pSecond(pSecondParm)
-    ,pThird(pThirdParm) {
+    unaryASTnode (string op,ASTnode* expr)
+    :op(op)
+    ,expr(expr) {
     }
 
-    ASTnode* getFirst() {
-        return pFirst;
+    string getOp() {
+        return op;
     }
 
-    ASTnode* getSecond() {
-        return pSecond;
+    ASTnode* getExpr() {
+        return expr;
     }
 
-    ASTnode* getThird() {
-        return pThird;
-    }
-
-     virtual void accept(ASTvisitor& v) {
+    virtual void accept(ASTvisitor& v) {
       v.visit(*this);
     }
 
 private:
-    ASTnode* pFirst;
-    ASTnode* pSecond;
-    ASTnode* pThird;
+    string op;
+    ASTnode* expr;
 };
 
-
-class IntLitASTnode: public ASTnode {
+class callArgASTnode : public ASTnode {
 public:
-	IntLitASTnode(int intlit)
-    : intlit(intlit) {
+    callArgASTnode (ASTnode* expr,string strArg)
+    :expr(expr)
+    , strArg(strArg) {
+    }
+    
+    string getStrArg() {
+        return strArg;
     }
 
-    int getIntLit() {
-        return intlit;
+    ASTnode* getExpr() {
+        return expr;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+      v.visit(*this);
+    }
+
+private:
+    string strArg;
+    ASTnode* expr;
+};
+
+class literalASTnode: public ASTnode {
+public:
+	literalASTnode(string type,int intVal)
+    : intVal(intVal) {
+    }
+
+    literalASTnode(string type,string strVal)
+    : strVal(strVal) {
+    }
+    
+    string getType() {
+        return type;
+    }
+
+    string getStrVal() {
+        return strVal;
+    }
+
+    int getIntVal() {
+        return intVal;
     }
 
     virtual void accept(ASTvisitor& v) {
@@ -300,36 +783,9 @@ public:
     }
     
 private:
-	int intlit;
-};
-
-class AssignASTnode: public ASTnode {
-public:
-    AssignASTnode(string assignOpParam, string idParam, ASTnode* expParam)
-    : assignOpParam(assignOpParam)
-    , idParam(idParam)
-    , expParam(expParam) {
-    }
-
-    string getOp() {
-        return assignOpParam;
-    }
-
-    string getId() {
-        return idParam;
-    }
-
-    ASTnode* getExpr() {
-        return expParam;
-    }
-    virtual void accept(ASTvisitor& v) {
-        v.visit(*this);
-    }
-
-private:
-    string assignOpParam;
-    string idParam;
-    ASTnode* expParam;
+    string type;
+    string strVal;
+    int intVal;
 };
 
 class ASTContext {

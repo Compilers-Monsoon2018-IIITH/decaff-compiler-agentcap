@@ -77,8 +77,8 @@ str {char}*
 "continue"          {return token::CONTINUE;}
 "callout"           {return token::CALLOUT;}
 {id}                {yylval->stringVal = new std::string(yytext,yyleng); return token::ID;}
-{dec}               {yylval->integerVal = atoi(yytext); return token::DECIMAL;}
-{hex}               {yylval->integerVal = atoi(yytext); return token::HEX;}
+{dec}               {yylval->integerVal = atoi(yytext); return token::INT;}
+{hex}               {yylval->integerVal = atoi(yytext); return token::INT;}
 "="                 {return static_cast<token_type>(*yytext);}
 "+="|"-="           {yylval->stringVal = new std::string(yytext,yyleng); return token::PMEQUAL;}
 ","                 {return static_cast<token_type>(*yytext);}
