@@ -8,33 +8,7 @@ class PostFixVisitor: public ASTvisitor
 {
   public:
     int level=0;
-    virtual void visit(BinaryASTnode& node)
-    {
-        node.getLeft()->accept(*this);
-        node.getRight()->accept(*this);
-        std::cout << node.getBinOperator() << " ";
-    }
-
-    virtual void visit(TernaryASTnode& node)
-    {
-        node.getFirst()->accept(*this);
-        node.getSecond()->accept(*this);
-        node.getThird()->accept(*this);
-        std::cout << "? ";
-    }
-
-    virtual void visit(IntLitASTnode& node) 
-    {
-        std::cout << node.getIntLit() << " ";
-    }
-
-    virtual void visit(AssignASTnode& node)
-    {
-        std::cout << node.getId() << " ";
-        node.getExpr()->accept(*this);
-        std::cout << node.getOp() << " ";
-    }
-
+    
     virtual void visit(ProgramASTnode& node) {
         indent();
         std::cout << "<PROGRAM>\n";
@@ -93,6 +67,31 @@ class PostFixVisitor: public ASTvisitor
     }
     
     virtual void visit(methodDeclsASTnode& node){}
+    virtual void visit(methodDeclASTnode& node){}
+    virtual void visit(blockASTnode& node){}
+    virtual void visit(varDeclsASTnode& node){}
+    virtual void visit(varDeclASTnode& node){}
+    virtual void visit(idsASTnode& node){}
+    virtual void visit(stmtsASTnode& node){}
+    virtual void visit(stmtASTnode& node){}
+    virtual void visit(assignASTnode& node){}
+    virtual void visit(ifElseASTnode& node){}
+    virtual void visit(forASTnode& node){}
+    virtual void visit(rtnStmtASTnode& node){}
+    virtual void visit(breakStmtASTnode& node){}
+    virtual void visit(continueStmtASTnode& node){}
+    virtual void visit(methodCallASTnode& node){}
+    virtual void visit(callOutArgsASTnode& node){}
+    virtual void visit(exprListASTnode& node){}
+    virtual void visit(locationASTnode& node){}
+    virtual void visit(paramListASTnode& node){}
+    virtual void visit(parametersASTnode& node){}
+    virtual void visit(parameterASTnode& node){}
+    virtual void visit(exprASTnode& node){}
+    virtual void visit(binaryASTnode& node){}
+    virtual void visit(unaryASTnode& node){}
+    virtual void visit(callArgASTnode& node){}
+    virtual void visit(literalASTnode& node){}
 
     void indent() {
         for(int i=0;i<level;i++) {

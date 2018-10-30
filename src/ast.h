@@ -5,10 +5,6 @@
 #include <string>
 using namespace std;
 
-class BinaryASTnode;
-class TernaryASTnode;
-class IntLitASTnode;
-class AssignASTnode;
 class ProgramASTnode;
 class BodyASTnode;
 class fieldDeclsASTnode;
@@ -16,14 +12,35 @@ class fieldDeclASTnode;
 class variableASTnode;
 class variablesASTnode;
 class methodDeclsASTnode;
+class methodDeclASTnode;
+class blockASTnode;
+class varDeclsASTnode;
+class varDeclASTnode;
+class idsASTnode;
+class stmtsASTnode;
+class stmtASTnode;
+class assignASTnode;
+class ifElseASTnode;
+class forASTnode;
+class rtnStmtASTnode;
+class breakStmtASTnode;
+class continueStmtASTnode;
+class methodCallASTnode;
+class callOutArgsASTnode;
+class exprListASTnode;
+class locationASTnode;
+class paramListASTnode;
+class parametersASTnode;
+class parameterASTnode;
+class exprASTnode;
+class binaryASTnode;
+class unaryASTnode;
+class callArgASTnode;
+class literalASTnode;
 
 
 class ASTvisitor {
   public:
-    virtual void visit(BinaryASTnode& node) = 0;
-    virtual void visit(TernaryASTnode& node) = 0;
-    virtual void visit(IntLitASTnode& node) = 0;
-    virtual void visit(AssignASTnode& node) = 0;
     virtual void visit(ProgramASTnode& node) = 0;
     virtual void visit(BodyASTnode& node) = 0;
     virtual void visit(fieldDeclsASTnode& node) = 0;
@@ -31,6 +48,31 @@ class ASTvisitor {
     virtual void visit(variableASTnode& node) = 0;
     virtual void visit(variablesASTnode& node) = 0;
     virtual void visit(methodDeclsASTnode& node) = 0;
+    virtual void visit(methodDeclASTnode& node) = 0;
+    virtual void visit(blockASTnode& node) = 0;
+    virtual void visit(varDeclsASTnode& node) = 0;
+    virtual void visit(varDeclASTnode& node) = 0;
+    virtual void visit(idsASTnode& node) = 0;
+    virtual void visit(stmtsASTnode& node) = 0;
+    virtual void visit(stmtASTnode& node) = 0;
+    virtual void visit(assignASTnode& node) = 0;
+    virtual void visit(ifElseASTnode& node) = 0;
+    virtual void visit(forASTnode& node) = 0;
+    virtual void visit(rtnStmtASTnode& node) = 0;
+    virtual void visit(breakStmtASTnode& node) = 0;
+    virtual void visit(continueStmtASTnode& node) = 0;
+    virtual void visit(methodCallASTnode& node) = 0;
+    virtual void visit(callOutArgsASTnode& node) = 0;
+    virtual void visit(exprListASTnode& node) = 0;
+    virtual void visit(locationASTnode& node) = 0;
+    virtual void visit(paramListASTnode& node) = 0;
+    virtual void visit(parametersASTnode& node) = 0;
+    virtual void visit(parameterASTnode& node) = 0;
+    virtual void visit(exprASTnode& node) = 0;
+    virtual void visit(binaryASTnode& node) = 0;
+    virtual void visit(unaryASTnode& node) = 0;
+    virtual void visit(callArgASTnode& node) = 0;
+    virtual void visit(literalASTnode& node) = 0;
 };
 
 
@@ -229,7 +271,7 @@ public:
     }
 
     ASTnode* getParamList() {
-        return paramList
+        return paramList;
     }
 
     ASTnode* getblock() {
@@ -252,10 +294,6 @@ public:
     blockASTnode(ASTnode* varDecls, ASTnode* stmts)
     : varDecls(varDecls)
     , stmts(stmts) {
-    }
-
-    vector<ASTnode*> getMethodsDecls() {
-        return methodDecls;
     }
 
     ASTnode* getVarDecls() {
@@ -412,7 +450,7 @@ private:
 
 class ifElseASTnode : public ASTnode {
 public:
-    assignASTnode(ASTnode* expr, ASTnode* ifblock, ASTnode* elseblock)
+    ifElseASTnode(ASTnode* expr, ASTnode* ifblock, ASTnode* elseblock)
     : expr(expr)
     , ifblock(ifblock)
     , elseblock(elseblock) {
@@ -444,7 +482,7 @@ class forASTnode : public ASTnode {
 public:
     forASTnode(string id, ASTnode* initCond, ASTnode* endCond, ASTnode* body)
     : id(id)
-    , initCond(initC)
+    , initCond(initCond)
     , endCond(endCond)
     , body(body) {
     }
@@ -571,7 +609,7 @@ public:
     }
 
     void push_back(ASTnode* expr) {
-        exprs.push_back(exp);
+        exprs.push_back(expr);
     }
     vector<ASTnode*> getExprs() {
         return exprs;
@@ -656,6 +694,30 @@ public:
 
 private:
     vector<ASTnode*> parameters;
+};
+
+class parameterASTnode : public ASTnode {
+public:
+    parameterASTnode(string type,string id)
+    :type(type)
+    , id(id) {
+    }
+
+    string getType() {
+        return type;
+    }
+
+    string getId() {
+        return id;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    string type;
+    string id;
 };
 
 class exprASTnode : public ASTnode {
@@ -752,18 +814,20 @@ public:
     }
 
 private:
-    string strArg;
     ASTnode* expr;
+    string strArg;
 };
 
 class literalASTnode: public ASTnode {
 public:
 	literalASTnode(string type,int intVal)
-    : intVal(intVal) {
+    : type(type)
+    , intVal(intVal) {
     }
 
     literalASTnode(string type,string strVal)
-    : strVal(strVal) {
+    : type(type)
+    , strVal(strVal) {
     }
     
     string getType() {

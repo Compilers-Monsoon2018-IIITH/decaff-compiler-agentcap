@@ -60,21 +60,61 @@
 	std::string* stringVal;
     class ASTnode* astnode;
     class ProgramASTnode* programnode;
-    class BodyASTnode* bodynode;
-    class fieldDeclsASTnode* fieldsnode;
-    class fieldDeclASTnode* fieldnode;
-    class variableASTnode* variablenode;
-    class variablesASTnode* variablesnode;
-    class methodDeclsASTnode* methodsnode;
+	class BodyASTnode* bodynode;
+	class fieldDeclsASTnode* fielddeclsnode;
+	class fieldDeclASTnode* fielddeclnode;
+	class variableASTnode* variablenode;
+	class variablesASTnode* variablesnode;
+	class methodDeclsASTnode* methoddeclsnode;
+	class methodDeclASTnode* methoddeclnode;
+	class blockASTnode* blocknode;
+	class varDeclsASTnode* vardeclsnode;
+	class varDeclASTnode* vardeclnode;
+	class idsASTnode* idsnode;
+	class stmtsASTnode* stmtsnode;
+	class stmtASTnode* stmtnode;
+	class assignASTnode* assignnode;
+	class ifElseASTnode* ifelsenode;
+	class forASTnode* fornode;
+	class rtnStmtASTnode* rntstmtnode;
+	class breakStmtASTnode* breakstmtnode;
+	class continueStmtASTnode* continuenode;
+	class methodCallASTnode* methodcallnode;
+	class callOutArgsASTnode* calloutargsnode;
+	class exprListASTnode* exprlistnode;
+	class locationASTnode* locationnode;
+	class paramListASTnode* paramlistnode;
+	class parametersASTnode* parametersnode;
+	class exprASTnode* exprnode;
+	class binaryASTnode* binarynode;
+	class unaryASTnode* unarynode;
+	class callArgASTnode* callargnode;
+	class literalASTnode* literalnode;
 }
 
 %type <programnode> program
 %type <bodynode> body
-%type <fieldsnode> field_decl_star
-%type <fieldnode> field_decl
+%type <fielddeclsnode> field_decl_star
+%type <fielddeclnode> field_decl
 %type <variablesnode> variables
 %type <variablenode> variable
-%type <methodsnode> method_decl_star
+%type <methoddeclsnode> method_decl_star
+%type <methoddeclnode> method_decl
+%type <blocknode> block
+%type <vardeclsnode> var_decl_star
+%type <vardeclnode> var_decl
+%type <idsnode> ID_plus
+%type <stmtsnode> statement_star
+%type <stmtnode> statement
+%type <methodcallnode> method_call
+%type <calloutargsnode> callout_arg_plus
+%type <exprlistnode> expr_list
+%type <locationnode> location
+%type <paramlistnode> parameters_list
+%type <parametersnode> parameters
+%type <exprnode> expr
+%type <callargnode> callout_arg
+%type <literalnode> literal
 
 //%destructor { delete $$; } expr
 
@@ -92,8 +132,8 @@
 
 %token END 0
 %token EOL
-%token CLSPRG CALLOUT RETURN BREAK CONTINUE IF ELSE FOR EQEQ NE AND OR SCOLON
-%token <stringVal> BOOL VOID TYPE ID PMEQUAL RELOP CHAR STRING
+%token CLSPRG CALLOUT RETURN BREAK CONTINUE IF ELSE FOR SCOLON
+%token <stringVal> BOOL VOID TYPE ID PMEQUAL RELOP CHAR STRING EQEQ NE AND OR
 %token <integerVal> INT
 
 %left OR AND
@@ -137,8 +177,8 @@ method_decl_star :
 	;
 
 method_decl : 
-	VOID ID '(' parameters_list ')' block {$$ = new methodDeclASTnode(*$1,$2,$4,$6);}
-	| TYPE ID '(' parameters_list ')' block {$$ = new methodDeclASTnode(*$1,$2,$4,$6);}
+	VOID ID '(' parameters_list ')' block {$$ = new methodDeclASTnode(*$1,*$2,$4,$6);}
+	| TYPE ID '(' parameters_list ')' block {$$ = new methodDeclASTnode(*$1,*$2,$4,$6);}
 	;
 
 block : 
@@ -165,7 +205,7 @@ statement_star :
 	;
 
 statement : 
-	location '=' expr SCOLON {$$ = new stmtASTnode( new assignASTnode($1,'=',$3));}
+	location '=' expr SCOLON {$$ = new stmtASTnode( new assignASTnode($1,"=",$3));}
 	| location PMEQUAL expr SCOLON {$$ = new stmtASTnode( new assignASTnode($1,*$2,$3));}
 	| method_call SCOLON {$$ = new stmtASTnode($1);}
 	| IF '(' expr ')' block {$$ = new stmtASTnode( new ifElseASTnode($3,$5,NULL));}
@@ -175,14 +215,14 @@ statement :
 	| RETURN expr SCOLON {$$ = new stmtASTnode(new rtnStmtASTnode($2));}
 	| BREAK SCOLON {$$ = new stmtASTnode(new breakStmtASTnode());}
 	| CONTINUE SCOLON {$$ = new stmtASTnode(new continueStmtASTnode());}
-	| block {$$ = new stmtASTnode(new blockASTnode($1));}
+	| block {$$ = new stmtASTnode($1);}
 	;
 
 method_call :
-	ID '(' ')' { $$ = new methodASTnode(*$1,NULL);}
-	| ID '(' expr_list ')' { $$ = new methodASTnode("Default",*$1,$3);}
-	| CALLOUT '(' STRING ')' { $$ = new methodASTnode("Callout",*$3,NULL);}
-	| CALLOUT '(' STRING ',' callout_arg_plus ')' { $$ = new methodASTnode("Callout",*$3,$5);}
+	ID '(' ')' { $$ = new methodCallASTnode("Default",*$1,NULL);}
+	| ID '(' expr_list ')' { $$ = new methodCallASTnode("Default",*$1,$3);}
+	| CALLOUT '(' STRING ')' { $$ = new methodCallASTnode("Callout",*$3,NULL);}
+	| CALLOUT '(' STRING ',' callout_arg_plus ')' { $$ = new methodCallASTnode("Callout",*$3,$5);}
 	;
 
 callout_arg_plus : 
@@ -214,19 +254,19 @@ expr :
 	location {$$ = new exprASTnode($1);}
 	| method_call {$$ = new exprASTnode($1);}
 	| literal {$$ = new exprASTnode($1);}
-	|expr '+' expr {$$ = new exprASTnode(new binaryASTnode($1,$2,$3));}
-	|expr '-' expr {$$ = new exprASTnode(new binaryASTnode($1,$2,$3));}
-	|expr '*' expr {$$ = new exprASTnode(new binaryASTnode($1,$2,$3));}
-	|expr '/' expr {$$ = new exprASTnode(new binaryASTnode($1,$2,$3));}
-	|expr '%' expr {$$ = new exprASTnode(new binaryASTnode($1,$2,$3));}
+	|expr '+' expr {$$ = new exprASTnode(new binaryASTnode($1,"+",$3));}
+	|expr '-' expr {$$ = new exprASTnode(new binaryASTnode($1,"-",$3));}
+	|expr '*' expr {$$ = new exprASTnode(new binaryASTnode($1,"*",$3));}
+	|expr '/' expr {$$ = new exprASTnode(new binaryASTnode($1,"/",$3));}
+	|expr '%' expr {$$ = new exprASTnode(new binaryASTnode($1,"%",$3));}
 	|expr RELOP expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
 	|expr EQEQ expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
 	|expr NE expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
 	|expr AND expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
 	|expr OR expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
-	| '-' expr {$$ = new exprASTnode(new unaryASTnode($1,$2));}
-	| '!' expr {$$ = new exprASTnode(new unaryASTnode($1,$2));}
-	| '(' expr ')' {$$ = new exprASTnode(new unaryASTnode($1,$2));}
+	| '-' expr {$$ = new exprASTnode(new unaryASTnode("-",$2));}
+	| '!' expr {$$ = new exprASTnode(new unaryASTnode("!",$2));}
+	| '(' expr ')' {$$ = new exprASTnode(new unaryASTnode("(",$2));}
 	;
 
 callout_arg : 
