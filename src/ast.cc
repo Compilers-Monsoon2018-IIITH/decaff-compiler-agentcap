@@ -7,33 +7,24 @@
 #include "PostFixVisitor.h"
 
 
-int main()
-{
+int main() {
     ASTContext ast;
     decaf::Driver driver(ast);
     PostFixVisitor pfv;
     
-    string line;
-    while( cout << "input: " &&
-	   getline(cin, line) &&
-	   !line.empty() )
-    {
-	    
-	    bool result = driver.parse_string(line, "input");
+    string fname;
+    while( cout << "input Filename: " && getline(cin, fname) && !fname.empty() ) {
+	    bool result = driver.parse_file(fname);
 
-	    if (result)
-    	{
+	    if (result) {
             if (ast.pRoot != NULL ) {
+                cout << "AST:\n";
                 ProgramASTnode * pnode;
-
-                cout << "Postfix Form: " << endl; 
 
                 pnode = dynamic_cast<ProgramASTnode *>(ast.pRoot);
                 if (pnode != NULL)
                     pfv.visit(*pnode);
-                
-                
-                //  cout <<  endl; 
+
             }
             ast.clearAST();
 	    }

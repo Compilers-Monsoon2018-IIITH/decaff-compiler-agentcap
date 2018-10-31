@@ -107,7 +107,6 @@ str {char}*
 \n                  {
                         yylloc->lines(yyleng);
                         yylloc->step();
-                        return token::EOL;
                     }
 .                   {
                         printf("Line No : Unrecognized Character\n");

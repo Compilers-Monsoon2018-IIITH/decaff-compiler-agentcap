@@ -1,6 +1,7 @@
 
 
 CXX = g++
+#CXXFLAGS =
 CXXFLAGS = -W -Wall -Wextra -ansi -g
 INCLUDE = -I/usr/local/opt/flex/include/ -I./
 

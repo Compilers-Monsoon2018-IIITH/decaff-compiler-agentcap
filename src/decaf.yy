@@ -173,7 +173,7 @@ variable :
 
 method_decl_star :
 	{$$ = new methodDeclsASTnode();}
-	| method_decl method_decl_star {$$->push_back($1);}
+	| method_decl method_decl_star {$2->push_back($1); $$=$2;}
 	;
 
 method_decl : 
@@ -196,12 +196,12 @@ var_decl :
 
 ID_plus : 
 	ID {$$ = new idsASTnode();$$->push_back(*$1);}
-	| ID_plus ',' ID {$$->push_back(*$3);}
+	| ID_plus ',' ID {$1->push_back(*$3); $$=$1;}
 	;
 
 statement_star :
 	{$$ = new stmtsASTnode();}
-	| statement_star statement {$$->push_back($2);}
+	| statement_star statement {$1->push_back($2);  $$=$1;}
 	;
 
 statement : 
@@ -227,12 +227,12 @@ method_call :
 
 callout_arg_plus : 
 	callout_arg {$$ = new callOutArgsASTnode(); $$->push_back($1);}
-	| callout_arg_plus ',' callout_arg {$$->push_back($3);}
+	| callout_arg_plus ',' callout_arg {$1->push_back($3); $$=$1;}
 	;
 
 expr_list : 
 	expr {$$ = new exprListASTnode(); $$->push_back($1);}
-	| expr_list ',' expr {$$->push_back($3);}
+	| expr_list ',' expr {$1->push_back($3); $$=$1;}
 	;
 
 location : 
@@ -247,7 +247,7 @@ parameters_list:
 
 parameters : 
 	TYPE ID {$$ = new parametersASTnode();$$->push_back(new parameterASTnode(*$1,*$2));}
-	| parameters ',' TYPE ID {$$->push_back(new parameterASTnode(*$3,*$4));}
+	| parameters ',' TYPE ID {$1->push_back(new parameterASTnode(*$3,*$4)); $$=$1;}
 	;
 
 expr : 
@@ -260,17 +260,17 @@ expr :
 	|expr '/' expr {$$ = new exprASTnode(new binaryASTnode($1,"/",$3));}
 	|expr '%' expr {$$ = new exprASTnode(new binaryASTnode($1,"%",$3));}
 	|expr RELOP expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
-	|expr EQEQ expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
-	|expr NE expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
-	|expr AND expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
-	|expr OR expr {$$ = new exprASTnode(new binaryASTnode($1,*$2,$3));}
+	|expr EQEQ expr {$$ = new exprASTnode(new binaryASTnode($1,"==",$3));}
+	|expr NE expr {$$ = new exprASTnode(new binaryASTnode($1,"!=",$3));}
+	|expr AND expr {$$ = new exprASTnode(new binaryASTnode($1,"&&",$3));}
+	|expr OR expr {$$ = new exprASTnode(new binaryASTnode($1,"||",$3));}
 	| '-' expr {$$ = new exprASTnode(new unaryASTnode("-",$2));}
 	| '!' expr {$$ = new exprASTnode(new unaryASTnode("!",$2));}
 	| '(' expr ')' {$$ = new exprASTnode(new unaryASTnode("(",$2));}
 	;
 
 callout_arg : 
-	expr {$$ = new callArgASTnode($1,NULL);}
+	expr {$$ = new callArgASTnode($1,"");}
 	| STRING {$$ = new callArgASTnode(NULL,*$1);}
 	;
 

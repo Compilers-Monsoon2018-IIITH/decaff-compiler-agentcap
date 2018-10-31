@@ -113,6 +113,10 @@ public:
         return fDecls;
     }
 
+    ASTnode* getMethods() {
+        return mDecls;
+    }
+
     virtual void accept(ASTvisitor& v) {
         v.visit(*this);
     }
@@ -141,30 +145,6 @@ public:
 
 private:
     vector<ASTnode*> fDecls;
-};
-
-class fieldDeclASTnode : public ASTnode {
-public:
-    fieldDeclASTnode(string ftypeParam, ASTnode* variablesParam) {
-        fType = ftypeParam;
-        variables = variablesParam;
-    }
-
-    string getfType() {
-        return fType;
-    }
-
-    ASTnode* getVariables() {
-        return variables;
-    }
-
-    virtual void accept(ASTvisitor& v) {
-        v.visit(*this);
-    }
-
-private:
-    string fType;
-    ASTnode* variables;
 };
 
 class variableASTnode : public ASTnode {
@@ -211,16 +191,17 @@ private:
     unsigned int arrLength;
 };
 
+
 class variablesASTnode : public ASTnode {
 public:
     variablesASTnode() {
     }
     
-    void push_back(ASTnode* variable) {
+    void push_back(variableASTnode* variable) {
         variables.push_back(variable);
     }
 
-    vector<ASTnode*> getVariables() {
+    vector<variableASTnode*> getVariables() {
         return variables;
     }
 
@@ -229,7 +210,29 @@ public:
     }
 
 private:
-    vector<ASTnode*> variables;
+    vector<variableASTnode*> variables;
+};
+
+class fieldDeclASTnode : public ASTnode {
+public:
+    fieldDeclASTnode(string fTypeParam, variablesASTnode* variablesParam) {
+        variables = variablesParam->getVariables();
+
+        for(unsigned int i=0;i<variables.size();i++) {
+            variables[i]->setDataType(fTypeParam);
+        }
+    }
+
+    vector<variableASTnode*> getVariables() {
+        return variables;
+    }
+
+    virtual void accept(ASTvisitor& v) {
+        v.visit(*this);
+    }
+
+private:
+    vector<variableASTnode*> variables;
 };
 
 class methodDeclsASTnode : public ASTnode {
@@ -262,6 +265,7 @@ public:
     , block(block) {
     }
 
+
     string getType() {
         return type;
     }
@@ -274,7 +278,7 @@ public:
         return paramList;
     }
 
-    ASTnode* getblock() {
+    ASTnode* getBlock() {
         return block;
     }
 
@@ -698,17 +702,17 @@ private:
 
 class parameterASTnode : public ASTnode {
 public:
-    parameterASTnode(string type,string id)
+    parameterASTnode(string type,string name)
     :type(type)
-    , id(id) {
+    , name(name) {
     }
 
     string getType() {
         return type;
     }
 
-    string getId() {
-        return id;
+    string getName() {
+        return name;
     }
 
     virtual void accept(ASTvisitor& v) {
@@ -717,7 +721,7 @@ public:
 
 private:
     string type;
-    string id;
+    string name;
 };
 
 class exprASTnode : public ASTnode {
@@ -744,8 +748,8 @@ public:
                     string binOperatorParm,
                     ASTnode* pRightParm)
     :pLeft(pLeftParm)
-    ,pRight(pRightParm)
-    ,mBinaryOperator(binOperatorParm) {
+    ,mBinaryOperator(binOperatorParm)
+    ,pRight(pRightParm) {
     }
 
     ASTnode* getLeft() {
@@ -766,8 +770,8 @@ public:
 
 private:
     ASTnode* pLeft;
-    ASTnode* pRight;
     string   mBinaryOperator;
+    ASTnode* pRight;
 };
 
 class unaryASTnode : public ASTnode {
