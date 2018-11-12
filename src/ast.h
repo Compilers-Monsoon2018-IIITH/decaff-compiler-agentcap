@@ -1,9 +1,51 @@
-
 #ifndef AST_H
 #define AST_H
 
-#include <string>
+#include <bits/stdc++.h>
+
 using namespace std;
+
+union Node
+{
+	int integerVal;
+    std::string* stringVal;
+    class ASTnode* astnode;
+    class ProgramASTnode* programnode;
+    class BodyASTnode* bodynode;
+    class fieldDeclsASTnode* fielddeclsnode;
+    class fieldDeclASTnode* fielddeclnode;
+    class variableASTnode* variablenode;
+    class variablesASTnode* variablesnode;
+    class methodDeclsASTnode* methoddeclsnode;
+    class methodDeclASTnode* methoddeclnode;
+    class blockASTnode* blocknode;
+    class varDeclsASTnode* vardeclsnode;
+    class varDeclASTnode* vardeclnode;
+    class idsASTnode* idsnode;
+    class stmtsASTnode* stmtsnode;
+    class stmtASTnode* stmtnode;
+    class assignASTnode* assignnode;
+    class ifElseASTnode* ifelsenode;
+    class forASTnode* fornode;
+    class rtnStmtASTnode* rntstmtnode;
+    class breakStmtASTnode* breakstmtnode;
+    class continueStmtASTnode* continuenode;
+    class methodCallASTnode* methodcallnode;
+    class callOutArgsASTnode* calloutargsnode;
+    class exprListASTnode* exprlistnode;
+    class locationASTnode* locationnode;
+    class paramListASTnode* paramlistnode;
+    class parametersASTnode* parametersnode;
+    class exprASTnode* exprnode;
+    class binaryASTnode* binarynode;
+    class unaryASTnode* unarynode;
+    class callArgASTnode* callargnode;
+    class literalASTnode* literalnode;
+};
+
+typedef union Node YYSTYPE;
+
+#define YYSTYPE_IS_DECLARED 1
 
 class ProgramASTnode;
 class BodyASTnode;
@@ -824,7 +866,7 @@ private:
 
 class literalASTnode: public ASTnode {
 public:
-	literalASTnode(string type,int intVal)
+    literalASTnode(string type,int intVal)
     : type(type)
     , intVal(intVal) {
     }
@@ -860,7 +902,7 @@ class ASTContext {
 public:
     ASTnode* pRoot;
     ~ASTContext() {
-	    clearAST();
+        clearAST();
     }
 
     // free all saved expression trees

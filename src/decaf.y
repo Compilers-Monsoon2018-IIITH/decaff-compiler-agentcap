@@ -1,96 +1,35 @@
-/* $Id$ -*- mode: c++ -*- */
-/** \file parser.yy Contains the example Bison parser source */
-
-%{ /*** C/C++ Declarations ***/
-
-#include <stdio.h>
-#include <string>
-#include <vector>
+%{
+#include "PostFixVisitor.h"
 #include "ast.h"
-#include "scanner.h"
-#include "driver.h"
+#include <bits/stdc++.h>
 
+  extern "C" int yylex();
+  extern "C" int yyparse();
+  extern "C" FILE *yyin;
+  extern "C" int line_num;
+  extern union Node yylval;
+  void yyerror(const char *s);
+  class ProgramASTnode* start = NULL;
+  int errors=0;
 %}
 
-/*** yacc/bison Declarations ***/
-
-/* Require bison 2.3 or later */
-%require "2.3"
-
-/* add debug output code to generated parser. disable this for release
- * versions. */
-%debug
-
-/* start symbol is named "start" */
+/* -------------	Tokens 		------------- */
 %start program
 
-/* write out a header file containing the token defines */
-%defines
+%token END 0
+%token EOL
+%token CLSPRG CALLOUT RETURN BREAK CONTINUE IF ELSE FOR SCOLON
+%token <stringVal> BOOL VOID TYPE ID PMEQUAL RELOP CHAR STRING EQEQ NE AND OR
+%token <integerVal> INT
 
-/* use newer C++ skeleton file */
-%skeleton "lalr1.cc"
 
-/* namespace to enclose parser in */
-%name-prefix="decaf"
-
-/* set the parser's class identifier */
-%define "parser_class_name" "Parser"
-
-/* keep track of the current position within the input */
-%locations
-%initial-action
-{
-    // initialize the initial location object
-    @$.begin.filename = @$.end.filename = &driver.streamname;
-};
-
-/* The driver is passed by reference to the parser and to the scanner. This
- * provides a simple but effective pure interface, not relying on global
- * variables. */
-%parse-param { class Driver& driver }
-
-/* verbose error messages */
-%error-verbose
-
-/*** BEGIN EXAMPLE - Change the example grammar's tokens below ***/
-
-%union
-{
-	int integerVal;
-	std::string* stringVal;
-    class ASTnode* astnode;
-    class ProgramASTnode* programnode;
-	class BodyASTnode* bodynode;
-	class fieldDeclsASTnode* fielddeclsnode;
-	class fieldDeclASTnode* fielddeclnode;
-	class variableASTnode* variablenode;
-	class variablesASTnode* variablesnode;
-	class methodDeclsASTnode* methoddeclsnode;
-	class methodDeclASTnode* methoddeclnode;
-	class blockASTnode* blocknode;
-	class varDeclsASTnode* vardeclsnode;
-	class varDeclASTnode* vardeclnode;
-	class idsASTnode* idsnode;
-	class stmtsASTnode* stmtsnode;
-	class stmtASTnode* stmtnode;
-	class assignASTnode* assignnode;
-	class ifElseASTnode* ifelsenode;
-	class forASTnode* fornode;
-	class rtnStmtASTnode* rntstmtnode;
-	class breakStmtASTnode* breakstmtnode;
-	class continueStmtASTnode* continuenode;
-	class methodCallASTnode* methodcallnode;
-	class callOutArgsASTnode* calloutargsnode;
-	class exprListASTnode* exprlistnode;
-	class locationASTnode* locationnode;
-	class paramListASTnode* paramlistnode;
-	class parametersASTnode* parametersnode;
-	class exprASTnode* exprnode;
-	class binaryASTnode* binarynode;
-	class unaryASTnode* unarynode;
-	class callArgASTnode* callargnode;
-	class literalASTnode* literalnode;
-}
+/* %define parse.error verbose */
+%left OR AND
+%left EQEQ NE
+%left RELOP
+%left '+' '-'
+%left '*' '/' '%' 
+%nonassoc '!'
 
 %type <programnode> program
 %type <bodynode> body
@@ -115,37 +54,10 @@
 %type <exprnode> expr
 %type <callargnode> callout_arg
 %type <literalnode> literal
-
-//%destructor { delete $$; } expr
-
- /*** END EXAMPLE - Change the example grammar's tokens above ***/
-
-%{
-
-/* this "connects" the bison parser in the driver to the flex scanner class
- * object. it defines the yylex() function call to pull the next token from the
- * current lexer object of the driver context. */
-#undef yylex
-#define yylex driver.lexer->lex
-
-%}
-
-%token END 0
-%token EOL
-%token CLSPRG CALLOUT RETURN BREAK CONTINUE IF ELSE FOR SCOLON
-%token <stringVal> BOOL VOID TYPE ID PMEQUAL RELOP CHAR STRING EQEQ NE AND OR
-%token <integerVal> INT
-
-%left OR AND
-%left EQEQ NE
-%left RELOP
-%left '+' '-'
-%left '*' '/' '%' 
-%nonassoc '!'
-
+/* -------------	Grammer Rules		------------- */
 %%
 program :
-	CLSPRG '{' body '}' {$$ = new ProgramASTnode($3); driver.ast.pRoot = $$;}
+	CLSPRG '{' body '}' {$$ = new ProgramASTnode($3); start = $$;}
 	;
 
 body :
@@ -163,7 +75,7 @@ field_decl :
 
 variables : 
 	variable {$$ = new variablesASTnode(); $$->push_back($1);}
-	| variables ',' variable { $$->push_back($3); }
+	| variables ',' variable { $$=$1;$$->push_back($3); }
 	;
 
 variable :
@@ -279,11 +191,29 @@ literal :
 	| CHAR {$$ = new literalASTnode("CHAR",*$1);}
 	| BOOL {$$ = new literalASTnode("BOOL",*$1);}
 	;
+
 %%
+int main(int argc, char **argv) {
+  	if(argc == 1) {
+		printf("No Input File Given\n");
+		exit(-1);
+	}
 
+	FILE *input = fopen(argv[1], "r");
 
-void decaf::Parser::error(const Parser::location_type& l,
-			    		  const std::string& m)
-{
-    driver.error(l, m);
+	if (input == NULL){
+		printf("Unable to open the given file!\n");
+		exit(-1);
+	}
+	yyin = input;
+	yyparse();
+
+	PostFixVisitor pfv;
+	pfv.visit(*start);
+}
+
+void yyerror(const char *s){
+	errors++;
+	printf("Error:%s at %d\n",s,line_num);
+  exit(-1);
 }
