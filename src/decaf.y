@@ -1,5 +1,6 @@
 %{
 #include "PostFixVisitor.h"
+#include "CodeGenerator.h"
 #include "ast.h"
 #include <bits/stdc++.h>
 
@@ -210,6 +211,10 @@ int main(int argc, char **argv) {
 
 	PostFixVisitor pfv;
 	pfv.visit(*start);
+
+	CodeGen cgn;
+	cgn.codegen(*start);
+	start->printCode();
 }
 
 void yyerror(const char *s){
