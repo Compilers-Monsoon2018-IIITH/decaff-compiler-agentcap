@@ -142,38 +142,38 @@ class ASTvisitor {
 
 class CodeGenerator {
   public:
-    virtual Value* codegen(ProgramASTnode& node) = 0;
-    virtual Value* codegen(BodyASTnode& node) = 0;
-    virtual Value* codegen(fieldDeclsASTnode& node) = 0;
-    virtual Value* codegen(fieldDeclASTnode& node) = 0;
-    virtual Value* codegen(variableASTnode& node) = 0;
-    virtual Value* codegen(variablesASTnode& node) = 0;
-    virtual Value* codegen(methodDeclsASTnode& node) = 0;
-    virtual Value* codegen(methodDeclASTnode& node) = 0;
-    virtual Value* codegen(blockASTnode& node) = 0;
-    virtual Value* codegen(varDeclsASTnode& node) = 0;
-    virtual Value* codegen(varDeclASTnode& node) = 0;
-    virtual Value* codegen(idsASTnode& node) = 0;
-    virtual Value* codegen(stmtsASTnode& node) = 0;
-    virtual Value* codegen(stmtASTnode& node) = 0;
-    virtual Value* codegen(assignASTnode& node) = 0;
-    virtual Value* codegen(ifElseASTnode& node) = 0;
-    virtual Value* codegen(forASTnode& node) = 0;
-    virtual Value* codegen(rtnStmtASTnode& node) = 0;
-    virtual Value* codegen(breakStmtASTnode& node) = 0;
-    virtual Value* codegen(continueStmtASTnode& node) = 0;
-    virtual Value* codegen(methodCallASTnode& node) = 0;
-    virtual Value* codegen(callOutArgsASTnode& node) = 0;
-    virtual Value* codegen(exprListASTnode& node) = 0;
-    virtual Value* codegen(locationASTnode& node) = 0;
-    virtual Value* codegen(paramListASTnode& node) = 0;
-    virtual Value* codegen(parametersASTnode& node) = 0;
-    virtual Value* codegen(parameterASTnode& node) = 0;
-    virtual Value* codegen(exprASTnode& node) = 0;
-    virtual Value* codegen(binaryASTnode& node) = 0;
-    virtual Value* codegen(unaryASTnode& node) = 0;
-    virtual Value* codegen(callArgASTnode& node) = 0;
-    virtual Value* codegen(literalASTnode& node) = 0;
+    virtual Value* codegen(ProgramASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(BodyASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(fieldDeclsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(fieldDeclASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(variableASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(variablesASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(methodDeclsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Function* codegen(methodDeclASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(blockASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(varDeclsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(varDeclASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(idsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(stmtsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(stmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(assignASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(ifElseASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(forASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(rtnStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(breakStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(continueStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(methodCallASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(callOutArgsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(exprListASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(locationASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(paramListASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(parametersASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(parameterASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(exprASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(binaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(unaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(callArgASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
+    virtual Value* codegen(literalASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
 };
 
 
@@ -184,7 +184,7 @@ public :
 
     virtual void accept(ASTvisitor& V) = 0;
     
-    virtual Value* codegen(CodeGenerator& V) = 0;
+    virtual Value* codegen(CodeGenerator& V,map<string,llvm::AllocaInst *>& map_Oldvals) = 0;
 };
 
 class ProgramASTnode : public ASTnode {
@@ -205,8 +205,8 @@ public:
         TheModule->dump();
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -232,8 +232,8 @@ public:
         v.visit(*this);
     }
     
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 
@@ -259,8 +259,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -304,8 +304,8 @@ public:
         dataType = dataTypeParam;
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -333,8 +333,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -359,8 +359,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -384,8 +384,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -422,8 +422,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -452,8 +452,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -478,8 +478,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -505,8 +505,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -531,8 +531,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -556,8 +556,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -578,8 +578,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -610,8 +610,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -644,8 +644,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -683,8 +683,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -708,8 +708,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -725,8 +725,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 private:
 };
@@ -740,8 +740,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 private:
 };
@@ -770,8 +770,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 private:
     string callType;
@@ -795,8 +795,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -819,8 +819,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -856,8 +856,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -880,8 +880,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -904,8 +904,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -931,8 +931,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -954,8 +954,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -988,8 +988,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -1017,8 +1017,8 @@ public:
       v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -1045,8 +1045,8 @@ public:
       v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
 
 private:
@@ -1082,8 +1082,8 @@ public:
         v.visit(*this);
     }
 
-    virtual Value* codegen(CodeGenerator& v) {
-        v.codegen(*this);
+    virtual Value* codegen(CodeGenerator& v, map<string,llvm::AllocaInst *>& map_Oldvals) {
+        v.codegen(*this,map_Oldvals);
     }
     
 private:

@@ -213,7 +213,8 @@ int main(int argc, char **argv) {
 	pfv.visit(*start);
 
 	CodeGen cgn;
-	cgn.codegen(*start);
+	map<string,llvm::AllocaInst *> Old_vals;
+	cgn.codegen(*start,Old_vals);
 	start->printCode();
 }
 
