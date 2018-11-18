@@ -22,12 +22,14 @@
 using namespace std;
 using namespace llvm;
 
+
 static Module *TheModule = new Module("Decaf Complier",llvm::getGlobalContext());
 static LLVMContext &Context = getGlobalContext();
 static IRBuilder<> Builder(Context);
 static std::map<std::string, llvm::AllocaInst *> NamedValues;
 static FunctionPassManager *TheFPM;
 
+extern int errors;
 union Node
 {
 	int integerVal;
@@ -1103,6 +1105,14 @@ public:
     void clearAST() {
         delete pRoot;
     }
+};
+
+class reportError{
+    public:
+        static llvm::Value* ErrorV(string str) {
+            cout<<str<<endl;
+            return 0;
+        }
 };
 
 #endif /* End of AST_H */

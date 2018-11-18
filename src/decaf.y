@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
 	yyparse();
 
 	PostFixVisitor pfv;
-	pfv.visit(*start);
+	//pfv.visit(*start);
 
 	CodeGen cgn;
 	map<string,llvm::AllocaInst *> Old_vals;

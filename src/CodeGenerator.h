@@ -119,7 +119,8 @@ public:
 
 
 		Value *rtnVal = node.getBlock()->codegen(*this,map_Oldvals);
-		if(rtnVal){
+		///////////////////////////////////////Change this/////////////////////////////////
+		if(true || rtnVal){
 			if(node.getType() != "void") Builder.CreateRet(rtnVal);
 			else Builder.CreateRetVoid();
 			
@@ -145,18 +146,82 @@ public:
 
     virtual Value* codegen(varDeclsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) {
 		Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1));
-  //       vector<ASTnode*> varDecls = node.getVarDecls();
+        vector<ASTnode*> varDecls = node.getVarDecls();
 
-		// for(int i=0;i<varDecls.size();i++) {
-		// 	varDecls[i]->codegen(*this,map_Oldvals);
-		// }
+		for(int i=0;i<varDecls.size();i++) {
+			varDecls[i]->codegen(*this,map_Oldvals);
+		}
 		return v;
 	}
-    virtual Value* codegen(varDeclASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+
+    virtual Value* codegen(varDeclASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); 
+    	Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+        idsASTnode* idsnode = dynamic_cast<idsASTnode*>(node.getIds());
+        vector<string> ids = idsnode->getIds();
+        string ids_type = node.getType();
+    	for(int i=0;i<ids.size();i++) {
+    		llvm::AllocaInst *Alloca;
+    		Alloca = CreateEntryBlockAlloca(TheFunction,ids[i],ids_type);
+    		Builder.CreateStore(ConstantInt::get(getGlobalContext(),APInt(32,0)),Alloca);
+
+    		map_Oldvals[ids[i]] = NamedValues[ids[i]];
+    		NamedValues[ids[i]] = Alloca;
+    	}
+
+    	return v;
+    }
     virtual Value* codegen(idsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(stmtsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(stmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(assignASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    virtual Value* codegen(stmtsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1));
+        vector<ASTnode*> stmts = node.getStmts();
+
+        for(int i=0;i<stmts.size();i++) {
+        	v = stmts[i]->codegen(*this,map_Oldvals);
+        }
+
+    	return v;
+    }
+
+    virtual Value* codegen(stmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1));
+    	v = node.getStmt()->codegen(*this,map_Oldvals);
+    	return v;
+    }
+
+    virtual Value* codegen(assignASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1));
+    	locationASTnode* location = dynamic_cast<locationASTnode*>(node.getLocation());
+    	
+    	Value* var = NamedValues[location->getId()];
+		if(var == 0){
+			errors++;
+			string msg = "Undefined Variable ";
+			msg += location->getId();
+			return reportError::ErrorV(msg);
+		}
+
+		Value* val = node.getExpr()->codegen(*this,map_Oldvals);
+		if(val == 0){
+			errors++;
+			return reportError::ErrorV("Invalid Expression");
+		}
+
+		if(node.getOp() == "+=") val = Builder.CreateAdd(Builder.CreateLoad(var,location->getId()), val,"addEqualToTmp");
+		else if(node.getOp() == "-=") val = Builder.CreateSub(Builder.CreateLoad(var,location->getId()), val,"subEqualToTmp");
+
+		if(location->getType() == "Array") {
+			Value* index = location->getExpr()->codegen(*this,map_Oldvals);
+			    std::vector<llvm::Value *> args;
+				args.push_back(Builder.getInt32(0));
+				args.push_back(index);
+				Value *cur = Builder.CreateGEP(cur, args, location->getId()+"_IDX"); 
+		}
+
+		return Builder.CreateStore(val, var);
+	}
+
     virtual Value* codegen(ifElseASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(forASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(rtnStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
