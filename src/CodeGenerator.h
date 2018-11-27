@@ -66,7 +66,7 @@ public:
         vector<ASTnode*> methodDecls = node.getMethodsDecls();
 
     	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); 
-        for(int i=0;i<methodDecls.size();i++) {
+        for(int i=methodDecls.size()-1;i>=0;i--) {
         	v = methodDecls[i]->codegen(*this,map_Oldvals);
         }
 
@@ -98,7 +98,7 @@ public:
     	else rtnType = Type::getVoidTy(getGlobalContext());
 
     	FunctionType *FT = llvm::FunctionType::get(rtnType, arguments, false);
-		Function *F = llvm::Function::Create(FT, Function::ExternalLinkage, node.getName(), TheModule);
+		Function *F = Function::Create(FT, Function::ExternalLinkage, node.getName(), TheModule);
 
 		unsigned idx = 0;
 		for (Function::arg_iterator arg = F->arg_begin(); idx < arg_names.size(); ++arg, ++idx) {
@@ -169,7 +169,7 @@ public:
     		map_Oldvals[ids[i]] = NamedValues[ids[i]];
     		NamedValues[ids[i]] = Alloca;
     	}
-
+		v = ConstantInt::get(getGlobalContext(), APInt(32,1)); 
     	return v;
     }
     virtual Value* codegen(idsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
@@ -224,7 +224,7 @@ public:
 
     virtual Value* codegen(ifElseASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
 		Value *cond = node.getExpr()->codegen(*this,map_Oldvals);
-		if(cond == 0) {
+		if(!cond) {
 			errors++;return reportError::ErrorV("Invalid Expression in the IF");
 		}
 		
@@ -322,6 +322,7 @@ public:
     virtual Value* codegen(continueStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     
     virtual Value* codegen(methodCallASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+
     	if(node.getCallType() == "Default") {
 			Function* calle = TheModule->getFunction(node.getName());
 			if(calle == 0) { 

@@ -23,7 +23,7 @@ class Program {
 		int n;
 		callout ("scanf", n);
 
-		towerOfHanoi(n, 0 , 2 , 1);
+		// towerOfHanoi(n, 0 , 2 , 1);
 		return 0;
 	}
 }

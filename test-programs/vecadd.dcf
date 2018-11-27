@@ -2,7 +2,7 @@ class Program {
 	int vec1[1000006], vec2[1000006], vec3[1000006];
 
 	int main() {
-		int k,i;
+		int k,i,n;
 
 		// Scanning the dimensionality of the vector
 		callout ("scanf", k);

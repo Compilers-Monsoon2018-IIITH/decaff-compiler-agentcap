@@ -2,7 +2,7 @@ class Program {
 	int arr[1000006];
 
 	int main() {
-		int n,i;
+		int n,i,tmp;
 
 		callout ("scanf", n);
 
