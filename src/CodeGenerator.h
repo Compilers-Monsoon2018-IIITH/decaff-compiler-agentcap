@@ -309,23 +309,172 @@ public:
 		return V;
     }
 
-    virtual Value* codegen(rtnStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    virtual Value* codegen(rtnStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v;
+    	if(node.getExpr()) {
+    		v = node.getExpr()->codegen(*this,map_Oldvals);
+    	}
+    	return v;
+    }
+
+    //Todo
     virtual Value* codegen(breakStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(continueStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(methodCallASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(callOutArgsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(exprListASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(locationASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    
+    virtual Value* codegen(methodCallASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	if(node.getCallType() == "Default") {
+			Function* calle = TheModule->getFunction(node.getName());
+			if(calle == 0) { 
+				errors++;return reportError::ErrorV("Unknown Function name" + node.getName());
+			}
+
+			exprListASTnode* args_list = dynamic_cast<exprListASTnode*>(node.getArgs());
+			vector<Value* > func_args;
+			vector<ASTnode*> args;
+			if(args_list != NULL) {
+				args = args_list->getExprs();
+			}
+
+			if(calle->arg_size() != args.size()) {
+				errors++; return reportError::ErrorV("Number of Parameters passed doesnt match the Function parameters");
+			}
+			
+			for(int i = 0; i < args.size(); i++){
+				Value* ar = args[i]->codegen(*this,map_Oldvals);
+				if(ar == 0) return 0;
+				else func_args.push_back(ar);
+			}
+			Value* v = Builder.CreateCall(calle,func_args);
+			return v;
+    	}
+    	else if(node.getCallType() == "Callout") {
+   //  		callOutArgsASTnode* args_list = dynamic_cast<callOutArgsASTnode>(node.getArgs());
+
+			// vector<Value* > func_args;
+   //  		vector<ASTnode*> args;
+   //  		if(args_list != NULL) {
+   //  			args = args_list->getArgs();
+   //  		}
+
+   //  		for(int i = 0; i < args.size(); i++){
+   //  			callArgASTnode* arg = dynamic_cast<callArgASTnode*> args[i];
+			// 	Value* ar = args[i]->codegen(*this,map_Oldvals);
+			// 	if(ar == 0) return 0;
+			// 	else func_args.push_back(ar);
+			// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    	}
+    }
+    
+    virtual Value* codegen(callOutArgsASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) {Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}    
+    virtual Value* codegen(exprListASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) {Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    
+    virtual Value* codegen(locationASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v;
+    	if(node.getType() == "Normal") {
+    		v = NamedValues[node.getId()];
+    	}
+    	else {
+    		Value* idx = node.getExpr()->codegen(*this,map_Oldvals);
+    		if(idx == 0) {
+    			errors++;return reportError::ErrorV("Unknown Variable name " + node.getId());
+    		}
+    		v = NamedValues[node.getId()];
+    	}
+    	if(v == 0) {
+			errors++; return reportError::ErrorV("Unknown Variable name " + node.getId());
+    	}
+    	v = ConstantInt::get(getGlobalContext(), APInt(32,1)); 
+    	return v;
+    }
+
     virtual Value* codegen(paramListASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(parametersASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(parameterASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(exprASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(binaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(unaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    
+    virtual Value* codegen(exprASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); 
+    	v = node.getExpr()->codegen(*this,map_Oldvals);
+    	return v;
+    }
+
+    virtual Value* codegen(binaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	Value* left = node.getLeft()->codegen(*this,map_Oldvals);
+    	Value* right = node.getRight()->codegen(*this,map_Oldvals);
+
+    	if(left == 0 || right == 0) {
+    		errors++; return reportError::ErrorV("Error in operands of binary Op " + node.getBinOperator());
+    	}
+    	Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1));
+    	string op =  node.getBinOperator();
+
+    	if(op == "+") v = Builder.CreateAdd(left,right,"addtmp");
+    	if(op == "-") v = Builder.CreateSub(left,right,"subtmp");
+    	if(op == "*") v = Builder.CreateMul(left,right,"multmp");
+    	if(op == "/") v = Builder.CreateUDiv(left,right,"divtmp");
+    	if(op == "%") v = Builder.CreateURem(left,right,"modtmp");
+    	if(op == ">") v = Builder.CreateICmpUGT(left,right,"gtcomparetmp");
+    	if(op == "<") v = Builder.CreateICmpULT(left,right,"ltcomparetmp");
+    	if(op == ">=") v = Builder.CreateICmpUGE(left,right,"gecomparetmp");
+    	if(op == "<=") v = Builder.CreateICmpULE(left,right,"lecomparetmp");
+    	if(op == "==") v = Builder.CreateICmpEQ(left,right,"equalcomparetmp");
+    	if(op == "!=") v = Builder.CreateICmpNE(left,right,"notequalcomparetmp");
+    	// if(op == "&&") 
+    	// if(op == "||") 
+    	
+    	return v;
+    }
+
+    virtual Value* codegen(unaryASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+		Value* v = node.getExpr()->codegen(*this,map_Oldvals);
+		string op = node.getOp();
+		if(v == 0) {
+			errors++;
+			return reportError::ErrorV("Error in operands of unary Op " + op);
+		}
+		if(op == "-") return Builder.CreateNeg(v,"negtmp");
+		else if(op == "!") return Builder.CreateNot(v,"nottmp");
+    }
+
     virtual Value* codegen(callArgASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(literalASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-
-
+    virtual Value* codegen(literalASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+    	string litType = node.getType();
+    	Value* v;
+    	if(litType == "INT") v = ConstantInt::get(getGlobalContext(), llvm::APInt(32,node.getIntVal()));
+    	else if(litType == "BOOL") {
+    		bool val;
+    		if(node.getStrVal() == "true") val = true;
+    		else val = false;
+    		v = ConstantInt::get(getGlobalContext(), llvm::APInt(1,val));
+    	}
+    	else if(litType == "CHAR") {
+    		v = Builder.CreateGlobalStringPtr(node.getStrVal());
+    	}
+    	return v;
+    }
 };
 
 

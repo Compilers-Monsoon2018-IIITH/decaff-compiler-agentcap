@@ -179,7 +179,7 @@ expr :
 	|expr OR expr {$$ = new exprASTnode(new binaryASTnode($1,"||",$3));}
 	| '-' expr {$$ = new exprASTnode(new unaryASTnode("-",$2));}
 	| '!' expr {$$ = new exprASTnode(new unaryASTnode("!",$2));}
-	| '(' expr ')' {$$ = new exprASTnode(new unaryASTnode("(",$2));}
+	| '(' expr ')' {$$ = $2;}
 	;
 
 callout_arg : 
