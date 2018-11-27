@@ -222,8 +222,93 @@ public:
 		return Builder.CreateStore(val, var);
 	}
 
-    virtual Value* codegen(ifElseASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
-    virtual Value* codegen(forASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
+    virtual Value* codegen(ifElseASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+		Value *cond = node.getExpr()->codegen(*this,map_Oldvals);
+		if(cond == 0) {
+			errors++;return reportError::ErrorV("Invalid Expression in the IF");
+		}
+		
+		Function* TheFunction = Builder.GetInsertBlock()->getParent();
+		BasicBlock *ifBlock = BasicBlock::Create(Context, "if", TheFunction);
+		BasicBlock *elseBlock = BasicBlock::Create(Context, "else");
+		BasicBlock *mergeBlock = BasicBlock::Create(Context, "afterif");
+		
+		Builder.CreateCondBr(cond, ifBlock, elseBlock);
+
+		Builder.SetInsertPoint(ifBlock);
+		
+		Value* ifV  = node.getIfBlock()->codegen(*this,map_Oldvals);
+		if(ifV == 0) return 0;
+		
+		Builder.CreateBr(mergeBlock);
+		ifBlock = Builder.GetInsertBlock();
+
+		TheFunction->getBasicBlockList().push_back(elseBlock);
+		Builder.SetInsertPoint(elseBlock);
+		Value* elseV;
+		if(node.getElseBlock() != NULL) {
+			elseV = node.getElseBlock()->codegen(*this,map_Oldvals);
+			if(elseV == 0) return 0;
+		}
+		Builder.CreateBr(mergeBlock);
+		elseBlock = Builder.GetInsertBlock();
+		
+		TheFunction->getBasicBlockList().push_back(mergeBlock);
+		Builder.SetInsertPoint(mergeBlock);
+
+		PHINode *PN = Builder.CreatePHI(Type::getInt32Ty(getGlobalContext()), 2,"iftmp");
+		PN->addIncoming(ifV, ifBlock);
+		if(node.getElseBlock() != NULL) {
+			PN->addIncoming(elseV, elseBlock);
+		}
+		return PN;
+    }
+
+    virtual Value* codegen(forASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { 
+		Value* initVal = node.getInitCond()->codegen(*this,map_Oldvals);
+		if(initVal == 0) return 0;
+
+		Function *TheFunction = Builder.GetInsertBlock()->getParent();
+		
+		llvm::AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, node.getId(), "int");
+		Builder.CreateStore(initVal, Alloca);
+		
+		BasicBlock *PreheaderBB = Builder.GetInsertBlock();
+		BasicBlock* LoopBB = BasicBlock::Create(getGlobalContext(), "loop", TheFunction);
+		Builder.CreateBr(LoopBB);
+		Builder.SetInsertPoint(LoopBB);
+
+		PHINode *Variable = Builder.CreatePHI(Type::getInt32Ty(llvm::getGlobalContext()), 2, node.getId());
+		Variable->addIncoming(initVal, PreheaderBB);
+
+		llvm::AllocaInst *OldVal = NamedValues[node.getId()];
+		NamedValues[node.getId()] = Alloca;
+
+		if(node.getBody()->codegen(*this,map_Oldvals) == 0) return 0;
+		Value* StepVal = ConstantInt::get(getGlobalContext(),APInt(32,1));
+		Value* cur = Builder.CreateLoad(Alloca, node.getId());
+		Value* NextVar = Builder.CreateAdd(cur,StepVal,"nextvar");
+		Builder.CreateStore(NextVar, Alloca);
+
+		Value* cond = node.getEndCond()->codegen(*this,map_Oldvals);
+		if(cond == 0) {errors++;return reportError::ErrorV("Invalid Condition");
+		}
+
+		cond = Builder.CreateICmpULE(Variable, cond, "loopcond");
+		BasicBlock *LoopEndBB = Builder.GetInsertBlock();
+		BasicBlock *AfterBB = BasicBlock::Create(getGlobalContext(), "afterloop", TheFunction);
+		Builder.CreateCondBr(cond, LoopBB, AfterBB);
+
+		Builder.SetInsertPoint(AfterBB);
+		Variable->addIncoming(NextVar, LoopEndBB);
+
+		if(OldVal) NamedValues[node.getId()] = OldVal;
+		else NamedValues.erase(node.getId());
+
+		llvm::Value *V = ConstantInt::get(getGlobalContext(), APInt(32,1));
+		return V;
+    }
+
     virtual Value* codegen(rtnStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(breakStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
     virtual Value* codegen(continueStmtASTnode& node,map<string,llvm::AllocaInst *>& map_Oldvals) { Value* v = ConstantInt::get(getGlobalContext(), APInt(32,1)); return v;}
